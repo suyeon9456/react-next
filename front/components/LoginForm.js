@@ -1,8 +1,14 @@
 import React, { useCallback, useState } from 'react';
+import PropTypes from 'prop-types'
 import { Form, Button } from 'antd';
 import Link from 'next/link';
+import styled from 'styled-components';
 
-const LoginForm = () => {
+const ButtonWrapper = styled.div`
+  margin-top: 10px;
+`
+
+const LoginForm = ({ setIsLoggedIn }) => {
   const [userId, setUserId] = useState('');
   const [userPassword, setUserPassword] = useState('');
 
@@ -14,8 +20,13 @@ const LoginForm = () => {
     setUserPassword(e.target.value);
   }, []);
 
+  const onLogin = useCallback(() => {
+    console.log(userId, userPassword);
+    setIsLoggedIn(true);
+  }, [userId, userPassword]);
+
   return (
-    <Form>
+    <Form onFinish={onLogin}>
       <div>
         <label htmlFor="user-id">ID</label>
         <br />
@@ -32,12 +43,16 @@ const LoginForm = () => {
           required
         />
       </div>
-      <div>
-        <Button type="primary" htmlFor="submit" loading={false}>LOGIN</Button>
+      <ButtonWrapper>
+        <Button type="primary" htmlType="submit" loading={false}>LOGIN</Button>
         <Link href="/signup"><a><Button>SIGNUP</Button></a></Link>
-      </div>
+      </ButtonWrapper>
     </Form>
   )
 };
+
+LoginForm.propTypes = {
+  setIsLoggedIn: PropTypes.func.isRequired
+}
 
 export default LoginForm;
