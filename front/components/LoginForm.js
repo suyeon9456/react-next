@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import PropTypes from 'prop-types'
-import { Form, Button } from 'antd';
+import { Form, Button, Input } from 'antd';
 import Link from 'next/link';
 import styled from 'styled-components';
 
@@ -30,12 +30,12 @@ const LoginForm = ({ setIsLoggedIn }) => {
       <div>
         <label htmlFor="user-id">ID</label>
         <br />
-        <input name="user-id" value={userId} onChange={onChangeId} required />
+        <Input name="user-id" value={userId} onChange={onChangeId} required />
       </div>
       <div>
         <label htmlFor="user-password">PASSWORD</label>
         <br />
-        <input
+        <Input
           type="password"
           name="user-password"
           value={userPassword}
