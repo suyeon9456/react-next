@@ -3,22 +3,15 @@ import PropTypes from 'prop-types'
 import { Form, Button, Input } from 'antd';
 import Link from 'next/link';
 import styled from 'styled-components';
+import useInput from '../hooks/useInput';
 
 const ButtonWrapper = styled.div`
   margin-top: 10px;
 `
 
 const LoginForm = ({ setIsLoggedIn }) => {
-  const [userId, setUserId] = useState('');
-  const [userPassword, setUserPassword] = useState('');
-
-  const onChangeId = useCallback((e) => {
-    setUserId(e.target.value);
-  }, []);
-
-  const onChangePassword = useCallback((e) => {
-    setUserPassword(e.target.value);
-  }, []);
+  const [userId, onChangeId] = useInput('');
+  const [userPassword, onChangePassword] = useInput('');
 
   const onLogin = useCallback(() => {
     console.log(userId, userPassword);
