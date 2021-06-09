@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import PropTypes from 'prop-types'
+// import PropTypes from 'prop-types'
 import { Form, Button, Input } from 'antd';
 import Link from 'next/link';
 import styled from 'styled-components';
@@ -18,7 +18,7 @@ const LoginForm = () => {
 
   const onLogin = useCallback(() => {
     console.log(userId, userPassword);
-    dispatch(loginAction());
+    dispatch(loginAction({ id: userId, password: userPassword }));
   }, [userId, userPassword]);
 
   return (
