@@ -34,6 +34,14 @@ export const addPost = {
   type: ADD_POST
 };
 
+const ADD_COMMENT = 'ADD_COMMENT';
+export const addComment = (data) => {
+  return {
+    type: ADD_COMMENT,
+    data: data
+  }
+}
+
 const dummyPost = {
   id: 2,
   content: '더미데이터입니다.',
@@ -52,6 +60,18 @@ const reducer = (state = initialState, action) => {
         ...state,
         mainPosts: [dummyPost, ...state.mainPosts],
         postAdded: true
+      }
+    case ADD_COMMENT:
+      return {
+        ...state,
+        mainPosts: state.mainPosts.map((post) => {
+          return post.id === action.data.postId
+            ? {
+                ...post,
+                Comments: [...post.Comments, { User: { nickname: action.data.id }, content: action.data.comment }]
+              }
+            : post
+        })
       }
     default: 
       return state;
