@@ -6,6 +6,7 @@ import { RetweetOutlined, HeartOutlined, EllipsisOutlined, MessageOutlined, Hear
 import PostImages from './PostImages';
 import { useSelector } from 'react-redux';
 import CommentForm from './CommentForm';
+import PostContent from './PostContent';
 
 const PostCard = ({ post }) => {
   const id = useSelector((state) => state.user.me?.id);
@@ -52,7 +53,7 @@ const PostCard = ({ post }) => {
         <Card.Meta
           avatar={post.User.nickname[0]}
           title={post.User.nickname}
-          description={post.content}
+          description={<PostContent postData={post.content} />}
         />
       </Card>
       {commentsOpen && (
