@@ -18,11 +18,12 @@ const PostCard = ({ post }) => {
   const onToggleCommentsOpen = useCallback(() => {
     setCommentsOpen((prev) => !prev);
   }, []);
+  console.log('이미지', post.Images)
 
   return (
     <div>
       <Card
-        cover={post.Images && <PostImages images={post.Images} />}
+        cover={post.Images[0] && <PostImages images={post.Images} />}
         actions={[
           <RetweetOutlined key="retweet" />,
           liked
