@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import 'antd/dist/antd.css';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
+import withReduxSaga from 'next-redux-saga';
 
 import wrapper from '../store/configureStore';
 
@@ -23,4 +24,4 @@ App.propTypes = {
   Component: PropTypes.elementType.isRequired
 }
 
-export default wrapper.withRedux(App);
+export default wrapper.withRedux(withReduxSaga(App));
