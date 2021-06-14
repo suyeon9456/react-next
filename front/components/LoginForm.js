@@ -4,7 +4,7 @@ import { Form, Button, Input } from 'antd';
 import Link from 'next/link';
 import styled from 'styled-components';
 import useInput from '../hooks/useInput';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { loginAction } from '../reducers/user';
 
 const ButtonWrapper = styled.div`
@@ -13,6 +13,7 @@ const ButtonWrapper = styled.div`
 
 const LoginForm = () => {
   const dispatch = useDispatch();
+  const isLoggingIn = useSelector((state) => state.user.isLoggingIn);
   const [userId, onChangeId] = useInput('');
   const [userPassword, onChangePassword] = useInput('');
 
@@ -40,7 +41,7 @@ const LoginForm = () => {
         />
       </div>
       <ButtonWrapper>
-        <Button type="primary" htmlType="submit" loading={false}>LOGIN</Button>
+        <Button type="primary" htmlType="submit" loading={isLoggingIn}>LOGIN</Button>
         <Link href="/signup"><a><Button>SIGNUP</Button></a></Link>
       </ButtonWrapper>
     </Form>
