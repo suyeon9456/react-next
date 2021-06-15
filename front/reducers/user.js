@@ -101,7 +101,7 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         isLoggingOut: false,
-        isLoggingError: action.error
+        isLoggingError: action.error,
       };
     case SIGN_UP_REQUEST:
       return {
