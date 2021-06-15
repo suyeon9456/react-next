@@ -1,10 +1,10 @@
 const initialState = {
-  isAddingPost: false,
-  isAddedPost: false,
-  isAddingPostError: null,
-  isAddingComment: false,
-  isAddedComment: false,
-  isAddingCommentError: null,
+  addPostLoading: false,
+  addPostDone: false,
+  addPostError: null,
+  addCommentLoading: false,
+  addCommentDone: false,
+  addCommentError: null,
   mainPosts: [{
     id: 1,
     User: {
@@ -28,11 +28,11 @@ const initialState = {
       User: {
         nickname: 'hero'
       },
-      content: '얼른 사고싶어요~'
-    }]
+      content: '얼른 사고싶어요~',
+    }],
   }],
   imagePaths: [],
-  postAdded: false
+  postAdded: false,
 };
 
 export const ADD_POST_REQUEST = 'ADD_POST_REQUEST';
@@ -44,15 +44,13 @@ export const ADD_COMMENT_SUCCESS = 'ADD_COMMENT_SUCCESS';
 export const ADD_COMMENT_ERROR = 'ADD_COMMENT_ERROR';
 
 export const addPost = {
-  type: ADD_POST_REQUEST
+  type: ADD_POST_REQUEST,
 };
 
-export const addComment = (data) => {
-  return {
-    type: ADD_COMMENT_REQUEST,
-    data: data
-  }
-}
+export const addComment = (data) => ({
+  type: ADD_COMMENT_REQUEST,
+  data,
+});
 
 const dummyPost = {
   id: 2,
@@ -62,7 +60,7 @@ const dummyPost = {
     nickname: 'suyeon',
   },
   Images: [],
-  Comments: []
+  Comments: [],
 };
 
 const reducer = (state = initialState, action) => {
@@ -70,52 +68,53 @@ const reducer = (state = initialState, action) => {
     case ADD_POST_REQUEST:
       return {
         ...state,
-        isAddingPost: true,
-        isAddedPost: false,
-        isAddingPostError: null
-      }
+        addPostLoading: true,
+        addPostDone: false,
+        addPostError: null,
+      };
     case ADD_POST_SUCCESS:
       return {
         ...state,
-        isAddingPost: false,
-        isAddedPost: true,
-        mainPosts: [dummyPost, ...state.mainPosts]
+        addPostLoading: false,
+        addPostDone: true,
+        mainPosts: [dummyPost, ...state.mainPosts],
         // postAdded: true
-      }
+      };
     case ADD_POST_ERROR:
       return {
         ...state,
-        isAddingPost: false,
-        isAddingPostError: action.error
-      }
+        addPostLoading: false,
+        addPostError: action.error,
+      };
     case ADD_COMMENT_REQUEST:
       return {
         ...state,
-        isAddingComment: true,
-        isAddedComment: false,
-        isAddingCommentError: null
-      }
+        addCommentLoading: true,
+        addCommentDone: false,
+        addCommentError: null,
+      };
     case ADD_COMMENT_SUCCESS:
       return {
         ...state,
-        isAddingComment: false,
-        isAddedComment: true,
-        mainPosts: state.mainPosts.map((post) => {
-          return post.id === action.data.postId
-            ? {
-                ...post,
-                Comments: [...post.Comments, { User: { nickname: action.data.id }, content: action.data.comment }]
-              }
-            : post
-        })
-      }
+        addCommentLoading: false,
+        addCommentDone: true,
+        mainPosts: state.mainPosts.map((post) => (post.id === action.data.postId
+          ? {
+            ...post,
+            Comments: [
+              ...post.Comments,
+              { User: { nickname: action.data.id }, content: action.data.comment },
+            ]
+            }
+          : post)),
+      };
     case ADD_COMMENT_ERROR:
       return {
         ...state,
-        isAddingComment: false,
-        isAddingCommentError: action.error
-      }
-    default: 
+        addCommentLoading: false,
+        addCommentError: action.error,
+      };
+    default:
       return state;
   }
 };

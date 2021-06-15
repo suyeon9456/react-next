@@ -1,19 +1,19 @@
 const initialState = {
-  isLoggingIn: false,
-  isLoggedIn: false,
-  isLoggingInError: null,
-  isLoggingOut: false,
-  isLoggedOut: false,
-  isLoggingOutError: null,
-  isSigningUp: false,
-  isSignedUp: false,
-  isSigningUError: null,
-  isFollowing: false,
-  isFollowed: false,
-  isFollowingError: null,
-  isUnFollowing: false,
-  isUnFollowed: false,
-  isUnFollowingError: null,
+  loginLoading: false,
+  loginDone: false,
+  loginError: null,
+  logOutLoading: false,
+  logOutDone: false,
+  logOutError: null,
+  signupLoading: false,
+  signupDone: false,
+  signupError: null,
+  followLoading: false,
+  followDone: false,
+  followError: null,
+  unfollowLoading: false,
+  unfollowDone: false,
+  unfollowError: null,
   me: null,
   signUpData: {},
   loginData: {}
@@ -48,119 +48,115 @@ const dummyUser = (data) => ({
   Followers: []
 })
 
-export const loginAction = (data) => {
-  return {
-    type: LOG_IN_REQUEST,
-    data
-  }
-};
+export const loginAction = (data) => ({
+  type: LOG_IN_REQUEST,
+  data
+});
 
-export const logoutAction = () => {
-  return {
-    type: LOG_OUT_REQUEST
-  }
-};
+export const logoutAction = () => ({
+  type: LOG_OUT_REQUEST
+});
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
     case LOG_IN_REQUEST:
       return {
         ...state,
-        isLoggingIn: true,
-        isLoggedIn: false,
-        isLoggingError: null
+        loginLoading: true,
+        loginDone: false,
+        loginError: null,
       };
     case LOG_IN_SUCCESS:
       return {
         ...state,
-        isLoggingIn: false,
-        isLoggedIn: true,
-        me: dummyUser(action.data)
+        loginLoading: false,
+        loginDone: true,
+        me: dummyUser(action.data),
       };
     case LOG_IN_ERROR:
       return {
         ...state,
-        isLoggingError: action.error
+        loginError: action.error,
       };
     case LOG_OUT_REQUEST:
       return {
         ...state,
-        isLoggingOut: true,
-        isLoggedOut: false,
-        isLoggingError: null
+        logOutLoading: true,
+        logOutDone: false,
+        logOutError: null,
       };
     case LOG_OUT_SUCCESS:
       return {
         ...state,
-        isLoggedIn: false,
-        isLoggingOut: false,
-        isLoggedOut: true,
-        me: null
+        loginDone: false,
+        logOutLoading: false,
+        logoutDone: true,
+        me: null,
       };
     case LOG_OUT_ERROR:
       return {
         ...state,
-        isLoggingOut: false,
-        isLoggingError: action.error,
+        logOutLoading: false,
+        logOutError: action.error,
       };
     case SIGN_UP_REQUEST:
       return {
         ...state,
-        isSigningUp: true,
-        isSignedUp: false,
-        isSigningUError: null
+        signupLoading: true,
+        signupDone: false,
+        signupError: null,
       };
     case SIGN_UP_SUCCESS:
       return {
         ...state,
-        isSigningUp: false,
-        isSignedUp: true
+        signupLoading: false,
+        signupDone: true,
       };
     case SIGN_UP_ERROR:
       return {
         ...state,
-        isSigningUp: false,
-        isSigningUError: action.error
+        signupLoading: false,
+        signupError: action.error,
       };
     case FOLLOW_REQUEST:
       return {
         ...state,
-        isFollowing: true,
-        isFollowed: false,
-        isFollowingError: null
+        followLoading: true,
+        followDone: false,
+        followError: null,
       };
     case FOLLOW_SUCCESS:
       return {
         ...state,
-        isFollowed: true,
-        isFollowing: false
+        followLoading: false,
+        followDone: true,
       };
     case FOLLOW_ERROR:
       return {
         ...state,
-        isFollowing: false,
-        isFollowingError: action.error
+        followLoading: false,
+        followError: action.error,
       };
     case UNFOLLOW_REQUEST:
       return {
         ...state,
-        isUnFollowing: true,
-        isUnFollowed: false,
-        isUnFollowingError: null
+        unfollowLoading: true,
+        unfollowDone: false,
+        unfollowError: null,
       };
     case UNFOLLOW_SUCCESS:
       return {
         ...state,
-        isUnFollowing: false,
-        isUnFollowed: true
+        unfollowLoading: false,
+        unfollowDone: true,
       };
     case UNFOLLOW_ERROR:
       return {
         ...state,
-        isUnFollowing: false,
-        isUnFollowingError: action.error
+        unfollowLoading: false,
+        unfollowError: action.error,
       };
-    default: 
+    default:
       return state;
   }
 };

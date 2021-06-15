@@ -19,7 +19,7 @@ function* login (action) {
   } catch (e) {
     yield put({
       type: LOG_IN_ERROR,
-      data: e.response.data
+      error: e.response.data
     });
   }
 }
@@ -39,7 +39,7 @@ function* logout () {
   } catch (e) {
     yield put({
       type: LOG_OUT_ERROR,
-      data: e.response.data
+      error: e.response.data
     });
   }
 }
@@ -59,7 +59,7 @@ function* signup () {
   } catch (e) {
     yield put({
       type: SIGN_UP_ERROR,
-      data: e.response.data
+      error: e.response.data
     });
   }
 }
@@ -79,7 +79,7 @@ function* follow () {
   } catch (e) {
     yield put({
       type: FOLLOW_ERROR,
-      data: e.response.data
+      error: e.response.data
     });
   }
 }
@@ -99,7 +99,7 @@ function* unfollow () {
   } catch (e) {
     yield put({
       type: UNFOLLOW_ERROR,
-      data: e.response.data
+      error: e.response.data
     });
   }
 }

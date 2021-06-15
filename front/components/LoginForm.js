@@ -13,21 +13,21 @@ const ButtonWrapper = styled.div`
 
 const LoginForm = () => {
   const dispatch = useDispatch();
-  const isLoggingIn = useSelector((state) => state.user.isLoggingIn);
-  const [userId, onChangeId] = useInput('');
+  const { loginLoading } = useSelector((state) => state.user);
+  const [userEmail, onChangeEmail] = useInput('');
   const [userPassword, onChangePassword] = useInput('');
 
   const onLogin = useCallback(() => {
-    console.log(userId, userPassword);
-    dispatch(loginAction({ id: userId, password: userPassword }));
-  }, [userId, userPassword]);
+    console.log(userEmail, userPassword);
+    dispatch(loginAction({ id: userEmail, password: userPassword }));
+  }, [userEmail, userPassword]);
 
   return (
     <Form onFinish={onLogin}>
       <div>
         <label htmlFor="user-id">ID</label>
         <br />
-        <Input name="user-id" value={userId} onChange={onChangeId} required />
+        <Input name="user-id" value={userEmail} onChange={onChangeEmail} required />
       </div>
       <div>
         <label htmlFor="user-password">PASSWORD</label>
@@ -41,7 +41,7 @@ const LoginForm = () => {
         />
       </div>
       <ButtonWrapper>
-        <Button type="primary" htmlType="submit" loading={isLoggingIn}>LOGIN</Button>
+        <Button type="primary" htmlType="submit" loading={loginLoading}>LOGIN</Button>
         <Link href="/signup"><a><Button>SIGNUP</Button></a></Link>
       </ButtonWrapper>
     </Form>
