@@ -19,16 +19,15 @@ const LoginForm = () => {
   const [userPassword, onChangePassword] = useInput('');
 
   const onLogin = useCallback(() => {
-    console.log(userEmail, userPassword);
     dispatch(loginAction({ id: userEmail, password: userPassword }));
   }, [userEmail, userPassword]);
 
   return (
     <Form onFinish={onLogin}>
       <div>
-        <label htmlFor="user-id">ID</label>
+        <label htmlFor="user-email">ID</label>
         <br />
-        <Input name="user-id" value={userEmail} onChange={onChangeEmail} required />
+        <Input type="email" name="user-email" value={userEmail} onChange={onChangeEmail} required />
       </div>
       <div>
         <label htmlFor="user-password">PASSWORD</label>

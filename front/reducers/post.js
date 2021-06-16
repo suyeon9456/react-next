@@ -7,6 +7,9 @@ const initialState = {
   addCommentLoading: false,
   addCommentDone: false,
   addCommentError: null,
+  removePostLoading: false,
+  removePostDone: false,
+  removePostError: null,
   mainPosts: [{
     id: 1,
     User: {
@@ -45,6 +48,10 @@ export const ADD_COMMENT_REQUEST = 'ADD_COMMENT_REQUEST';
 export const ADD_COMMENT_SUCCESS = 'ADD_COMMENT_SUCCESS';
 export const ADD_COMMENT_ERROR = 'ADD_COMMENT_ERROR';
 
+export const REMOVE_POST_REQUEST = 'REMOVE_POST_REQUEST';
+export const REMOVE_POST_SUCCESS = 'REMOVE_POST_SUCCESS';
+export const REMOVE_POST_ERROR = 'REMOVE_POST_ERROR';
+
 export const addPost = (data) => ({
   type: ADD_POST_REQUEST,
   data,
@@ -55,11 +62,16 @@ export const addComment = (data) => ({
   data,
 });
 
+export const removePost = (data) => ({
+  type: REMOVE_POST_REQUEST,
+  data,
+});
+
 const dummyPost = (data) => ({
-  id: shortId.generate(),
-  content: data,
+  id: data.id,
+  content: data.content,
   User: {
-    id: 1,
+    id: 'aa@gmacil.com',
     nickname: 'suyeon',
   },
   Images: [],
@@ -125,6 +137,27 @@ const reducer = (state = initialState, action) => {
         ...state,
         addCommentLoading: false,
         addCommentError: action.error,
+      };
+    case REMOVE_POST_REQUEST:
+      return {
+        ...state,
+        removePostLoading: true,
+        removePostDone: false,
+        removePostError: null,
+      };
+    case REMOVE_POST_SUCCESS:
+      return {
+        ...state,
+        removePostLoading: false,
+        removePostDone: true,
+        mainPosts: state.mainPosts.filter((v) => v.id !== action.data),
+        // postremoveed: true
+      };
+    case REMOVE_POST_ERROR:
+      return {
+        ...state,
+        removePostLoading: false,
+        removePostError: action.error,
       };
     default:
       return state;

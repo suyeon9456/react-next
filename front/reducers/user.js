@@ -46,13 +46,16 @@ export const UNFOLLOW_REQUEST = 'UNFOLLOW_REQUEST';
 export const UNFOLLOW_SUCCESS = 'UNFOLLOW_SUCCESS';
 export const UNFOLLOW_ERROR = 'UNFOLLOW_ERROR';
 
+export const ADD_POST_TO_ME = 'ADD_POST_TO_ME';
+export const REMOVE_POST_TO_ME = 'REMOVE_POST_TO_ME';
+
 const dummyUser = (data) => ({
   ...data,
   nickname: 'suyeon',
-  id: 2,
-  Posts: [],
-  Followings: [],
-  Followers: [],
+  id: data.id,
+  Posts: [{ id: 1 }],
+  Followings: [{ nickname: 'suyeon' }, { nickname: 'jaewook' }, { nickname: 'yogi' }],
+  Followers: [{ nickname: 'suyeon' }, { nickname: 'jaewook' }, { nickname: 'yogi' }],
 });
 
 export const loginAction = (data) => ({
@@ -181,6 +184,25 @@ const reducer = (state = initialState, action) => {
         ...state,
         unfollowLoading: false,
         unfollowError: action.error,
+      };
+    case ADD_POST_TO_ME:
+      console.log(action.data);
+      return {
+        ...state,
+        me: {
+          ...state.me,
+          Posts: [{ id: action.data }, ...state.me.Posts],
+        },
+      };
+    case REMOVE_POST_TO_ME:
+      console.log(action.data);
+      console.log(state.me.Posts);
+      return {
+        ...state,
+        me: {
+          ...state.me,
+          Posts: state.me.Posts.filter((v) => v.id !== action.data),
+        },
       };
     default:
       return state;
