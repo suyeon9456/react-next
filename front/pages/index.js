@@ -7,6 +7,7 @@ import PostForm from '../components/PostForm';
 const Home = () => {
   const { loginDone } = useSelector((state) => state.user);
   const { mainPosts } = useSelector((state) => state.post);
+  console.log('mainPosts', mainPosts);
   return (
     <AppLayout>
       {loginDone && <PostForm />}

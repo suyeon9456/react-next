@@ -2,8 +2,8 @@ import React, { useCallback, useEffect } from 'react';
 import { Form, Input, Button } from 'antd';
 import PropTypes from 'prop-types';
 
-import useInput from '../hooks/useInput';
 import { useDispatch, useSelector } from 'react-redux';
+import useInput from '../hooks/useInput';
 import { addComment } from '../reducers/post';
 
 const CommentForm = ({ post }) => {
@@ -33,7 +33,7 @@ const CommentForm = ({ post }) => {
 };
 
 CommentForm.propTypes = {
-  post: PropTypes.object.isRequired
-}
+  post: PropTypes.object.isRequired,
+};
 
 export default CommentForm;

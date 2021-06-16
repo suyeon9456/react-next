@@ -19,7 +19,7 @@ const PostCard = ({ post }) => {
   const onToggleCommentsOpen = useCallback(() => {
     setCommentsOpen((prev) => !prev);
   }, []);
-  console.log('이미지', post.Images);
+  console.log('이미지', post);
 
   return (
     <div>
@@ -89,7 +89,7 @@ PostCard.propTypes = {
     createdAt: PropTypes.object,
     Comments: PropTypes.arrayOf(PropTypes.any),
     Images: PropTypes.arrayOf(PropTypes.any),
-  }).isRequired
-}
+  }).isRequired,
+};
 
 export default PostCard;

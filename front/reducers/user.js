@@ -8,6 +8,9 @@ const initialState = {
   signupLoading: false,
   signupDone: false,
   signupError: null,
+  changeNicknameLoading: false,
+  changeNicknameDone: false,
+  changeNicknameError: null,
   followLoading: false,
   followDone: false,
   followError: null,
@@ -16,7 +19,7 @@ const initialState = {
   unfollowError: null,
   me: null,
   signUpData: {},
-  loginData: {}
+  loginData: {},
 };
 
 export const LOG_IN_REQUEST = 'LOG_IN_REQUEST';
@@ -30,6 +33,10 @@ export const LOG_OUT_ERROR = 'LOG_OUT_ERROR';
 export const SIGN_UP_REQUEST = 'SIGN_UP_REQUEST';
 export const SIGN_UP_SUCCESS = 'SIGN_UP_SUCCESS';
 export const SIGN_UP_ERROR = 'SIGN_UP_ERROR';
+
+export const CHANGE_NICKNAME_REQUEST = 'CHANGE_NICKNAME_REQUEST';
+export const CHANGE_NICKNAME_SUCCESS = 'CHANGE_NICKNAME_SUCCESS';
+export const CHANGE_NICKNAME_ERROR = 'CHANGE_NICKNAME_ERROR';
 
 export const FOLLOW_REQUEST = 'FOLLOW_REQUEST';
 export const FOLLOW_SUCCESS = 'FOLLOW_SUCCESS';
@@ -45,16 +52,16 @@ const dummyUser = (data) => ({
   id: 2,
   Posts: [],
   Followings: [],
-  Followers: []
-})
+  Followers: [],
+});
 
 export const loginAction = (data) => ({
   type: LOG_IN_REQUEST,
-  data
+  data,
 });
 
 export const logoutAction = () => ({
-  type: LOG_OUT_REQUEST
+  type: LOG_OUT_REQUEST,
 });
 
 const reducer = (state = initialState, action) => {
@@ -117,6 +124,25 @@ const reducer = (state = initialState, action) => {
         ...state,
         signupLoading: false,
         signupError: action.error,
+      };
+    case CHANGE_NICKNAME_REQUEST:
+      return {
+        ...state,
+        changeNicknameLoading: true,
+        changeNicknameDone: false,
+        changeNicknameError: null,
+      };
+    case CHANGE_NICKNAME_SUCCESS:
+      return {
+        ...state,
+        changeNicknameLoading: false,
+        changeNicknameDone: true,
+      };
+    case CHANGE_NICKNAME_ERROR:
+      return {
+        ...state,
+        changeNicknameLoading: false,
+        changeNicknameError: action.error,
       };
     case FOLLOW_REQUEST:
       return {

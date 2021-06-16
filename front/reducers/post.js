@@ -1,3 +1,5 @@
+import shortId from 'shortid';
+
 const initialState = {
   addPostLoading: false,
   addPostDone: false,
@@ -43,25 +45,35 @@ export const ADD_COMMENT_REQUEST = 'ADD_COMMENT_REQUEST';
 export const ADD_COMMENT_SUCCESS = 'ADD_COMMENT_SUCCESS';
 export const ADD_COMMENT_ERROR = 'ADD_COMMENT_ERROR';
 
-export const addPost = {
+export const addPost = (data) => ({
   type: ADD_POST_REQUEST,
-};
+  data,
+});
 
 export const addComment = (data) => ({
   type: ADD_COMMENT_REQUEST,
   data,
 });
 
-const dummyPost = {
-  id: 2,
-  content: '더미데이터입니다.',
+const dummyPost = (data) => ({
+  id: shortId.generate(),
+  content: data,
   User: {
     id: 1,
     nickname: 'suyeon',
   },
   Images: [],
   Comments: [],
-};
+});
+
+const dummyComment = (data) => ({
+  id: shortId.generate(),
+  content: data.comment,
+  User: {
+    id: data.id,
+    nickname: 'suyeon',
+  },
+});
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
@@ -77,7 +89,7 @@ const reducer = (state = initialState, action) => {
         ...state,
         addPostLoading: false,
         addPostDone: true,
-        mainPosts: [dummyPost, ...state.mainPosts],
+        mainPosts: [dummyPost(action.data), ...state.mainPosts],
         // postAdded: true
       };
     case ADD_POST_ERROR:
@@ -103,7 +115,7 @@ const reducer = (state = initialState, action) => {
             ...post,
             Comments: [
               ...post.Comments,
-              { User: { nickname: action.data.id }, content: action.data.comment },
+              dummyComment(action.data),
             ],
           }
           : post)),
