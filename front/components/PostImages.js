@@ -1,8 +1,8 @@
 import React, { useCallback, useState } from 'react';
 import PropTypes from 'prop-types';
-import { PlusOutlined } from '@ant-design/icons';
-import ImageZoom from './ImageZoom';
+// import { PlusOutlined } from '@ant-design/icons';
 import Slick from 'react-slick';
+import ImageZoom from './ImageZoom';
 import { Global, SlickWrapper } from './ImageZoom/styles';
 
 const PostImages = ({ images }) => {
@@ -63,13 +63,11 @@ const PostImages = ({ images }) => {
           slidesToScroll={1}
           dots
         >
-          {images.map((v) => {
-            return (
-              <div style={{ textAlign: 'center' }} key={v.src}>
-                <img style={{ margin: '0 auto', maxHeight: '750px' }} src={v.src} alt={v.src} onClick={onZoom} />
-              </div>
-            )
-          })}
+          {images.map((v) => (
+            <div style={{ textAlign: 'center' }} key={v.src}>
+              <img style={{ margin: '0 auto', maxHeight: '750px' }} src={v.src} alt={v.src} onClick={onZoom} />
+            </div>
+          ))}
         </Slick>
       </div>
       {showImagesZoom && <ImageZoom images={images} onClose={onClose} />}

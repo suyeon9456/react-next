@@ -9,7 +9,7 @@ const initialState = {
     id: 1,
     User: {
       id: 1,
-      nickname: '제로초'
+      nickname: '제로초',
     },
     content: '첫 번째 게시글 #해시태그 #익스프레스',
     Images: [{
@@ -17,16 +17,16 @@ const initialState = {
     }, {
       src: 'https://gimg.gilbut.co.kr/book/BN001958/rn_view_BN001958.jpg',
     }, {
-      src: 'https://gimg.gilbut.co.kr/book/BN001998/rn_view_BN001998.jpg'
+      src: 'https://gimg.gilbut.co.kr/book/BN001998/rn_view_BN001998.jpg',
     }],
     Comments: [{
       User: {
-        nickname: 'nero'
+        nickname: 'nero',
       },
-      content: '우와 개정판이 나왔군요~'
+      content: '우와 개정판이 나왔군요~',
     }, {
       User: {
-        nickname: 'hero'
+        nickname: 'hero',
       },
       content: '얼른 사고싶어요~',
     }],
@@ -104,8 +104,8 @@ const reducer = (state = initialState, action) => {
             Comments: [
               ...post.Comments,
               { User: { nickname: action.data.id }, content: action.data.comment },
-            ]
-            }
+            ],
+          }
           : post)),
       };
     case ADD_COMMENT_ERROR:

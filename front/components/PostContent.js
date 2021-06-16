@@ -18,7 +18,7 @@ const PostContent = ({ postData }) => (
 );
 
 PostContent.propTypes = {
-  postData: PropTypes.string.isRequired
+  postData: PropTypes.string.isRequired,
 };
 
 export default PostContent;

@@ -2,9 +2,9 @@ import React, { useCallback, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Button, Card, Popover, List, Avatar, Comment } from 'antd';
 import { RetweetOutlined, HeartOutlined, EllipsisOutlined, MessageOutlined, HeartTwoTone } from '@ant-design/icons'
+import { useSelector } from 'react-redux';
 
 import PostImages from './PostImages';
-import { useSelector } from 'react-redux';
 import CommentForm from './CommentForm';
 import PostContent from './PostContent';
 
@@ -19,7 +19,7 @@ const PostCard = ({ post }) => {
   const onToggleCommentsOpen = useCallback(() => {
     setCommentsOpen((prev) => !prev);
   }, []);
-  console.log('이미지', post.Images)
+  console.log('이미지', post.Images);
 
   return (
     <div>
@@ -41,13 +41,13 @@ const PostCard = ({ post }) => {
                       <Button>수정</Button>
                       <Button type="danger">삭제</Button>
                     </>
-                    )
+                  )
                   : <Button>신고</Button>}
               </Button.Group>
             )}
           >
             <EllipsisOutlined />
-          </Popover>
+          </Popover>,
         ]}
       >
         <Card.Meta
@@ -78,7 +78,7 @@ const PostCard = ({ post }) => {
         </>
       )}
     </div>
-  )
+  );
 };
 
 PostCard.propTypes = {

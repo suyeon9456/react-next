@@ -16,7 +16,7 @@ const UserProfile = () => {
       actions={[
         <div key="twit">트윗</div>,
         <div key="followings">팔로잉</div>,
-        <div key="followers">팔로워</div>
+        <div key="followers">팔로워</div>,
       ]}
     >
       <Card.Meta
@@ -25,7 +25,7 @@ const UserProfile = () => {
       />
       <Button onClick={onLogout} loading={logoutLoading}>LOGOUT</Button>
     </Card>
-  )
+  );
 };
 
 export default UserProfile;

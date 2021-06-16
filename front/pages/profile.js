@@ -5,8 +5,8 @@ import NicknameEditForm from '../components/NicknameEditForm';
 import FollowList from '../components/FollowList';
 
 const Profile = () => {
-  const followingList = [{ nickname: 'suyeon' }, { nickname: 'jaewook' }, { nickname: 'yogi' }]
-  const follwerList = [{ nickname: 'suyeon' }, { nickname: 'jaewook' }, { nickname: 'yogi' }]
+  const followingList = [{ nickname: 'suyeon' }, { nickname: 'jaewook' }, { nickname: 'yogi' }];
+  const follwerList = [{ nickname: 'suyeon' }, { nickname: 'jaewook' }, { nickname: 'yogi' }];
   return (
     <>
       <Head>
@@ -18,7 +18,7 @@ const Profile = () => {
         <FollowList header="FOLLOWER LIST" data={follwerList} />
       </AppLayout>
     </>
-  )
+  );
 };
 
 export default Profile;

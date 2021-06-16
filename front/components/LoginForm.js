@@ -3,13 +3,14 @@ import React, { useCallback } from 'react';
 import { Form, Button, Input } from 'antd';
 import Link from 'next/link';
 import styled from 'styled-components';
-import useInput from '../hooks/useInput';
 import { useDispatch, useSelector } from 'react-redux';
+
+import useInput from '../hooks/useInput';
 import { loginAction } from '../reducers/user';
 
 const ButtonWrapper = styled.div`
   margin-top: 10px;
-`
+`;
 
 const LoginForm = () => {
   const dispatch = useDispatch();
@@ -45,7 +46,7 @@ const LoginForm = () => {
         <Link href="/signup"><a><Button>SIGNUP</Button></a></Link>
       </ButtonWrapper>
     </Form>
-  )
+  );
 };
 
 // LoginForm.propTypes = {

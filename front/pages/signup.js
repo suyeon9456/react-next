@@ -2,9 +2,9 @@ import React, { useCallback, useState } from 'react';
 import Head from 'next/head';
 import { Form, Input, Checkbox, Button } from 'antd';
 // import Link from 'next/link';
+import styled from 'styled-components';
 import useInput from '../hooks/useInput';
 import AppLayout from '../components/AppLayout';
-import styled from 'styled-components';
 
 const ErrorMessage = styled.div`
   color: red;
@@ -38,7 +38,6 @@ const Signup = () => {
     if (!term) {
       return setTermError(true);
     }
-    console.log(id, password, nickname);
   }, [id, password, nickname, term]);
 
   return (
@@ -77,7 +76,7 @@ const Signup = () => {
         </div>
       </Form>
     </AppLayout>
-  )
+  );
 };
 
 export default Signup;

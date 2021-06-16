@@ -8,12 +8,10 @@ const FormWrapper = styled(Form)`
   padding: 20px;
 `;
 
-const NicknameEditForm = () => {
-  return (
-    <FormWrapper>
-      <Input.Search addonBefore="nickname" enterButton="수정" />
-    </FormWrapper>
-  )
-};
+const NicknameEditForm = () => (
+  <FormWrapper>
+    <Input.Search addonBefore="nickname" enterButton="수정" />
+  </FormWrapper>
+);
 
 export default NicknameEditForm;

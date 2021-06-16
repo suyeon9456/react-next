@@ -1,7 +1,8 @@
 import React, { useCallback, useState, useRef, useEffect } from 'react';
 import { Button, Form, Input } from 'antd';
-import { addPost } from '../reducers/post';
 import { useDispatch, useSelector } from 'react-redux';
+
+import { addPost } from '../reducers/post';
 
 const PostForm = () => {
   const { imagePaths, addPostDone } = useSelector((state) => state.post);
@@ -21,7 +22,7 @@ const PostForm = () => {
   const imageRef = useRef();
   const onClickImageUpload = useCallback(() => {
     imageRef.current.click();
-  }, [imageRef.current])
+  }, [imageRef.current]);
 
   const onSubmit = useCallback(() => {
     dispatch(addPost);
@@ -36,8 +37,8 @@ const PostForm = () => {
         <Button type="primary" style={{ float: 'right' }} htmlType="submit">POST UPLOAD</Button>
       </div>
       <div>
-        {imagePaths.map((v) => {
-          return (
+        {imagePaths.map((v) => (
+          (
             <div key={v} style={{ display: 'inline-block' }}>
               <img src={v} style={{ width: '200px' }} alt={v} />
               <div>
@@ -45,10 +46,10 @@ const PostForm = () => {
               </div>
             </div>
           )
-        })}
+        ))}
       </div>
     </Form>
-  )
+  );
 };
 
 export default PostForm;

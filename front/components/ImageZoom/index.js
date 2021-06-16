@@ -22,13 +22,13 @@ const ImageZoom = ({ images, onClose }) => {
             slidesToShow={1}
             slidesToScroll={1}
           >
-            {images.map((v) => {
-              return (
+            {images.map((v) => (
+              (
                 <ImageWrapper key={v.src}>
                   <img src={v.src} alt={v.src} />
                 </ImageWrapper>
               )
-            })}
+            ))}
           </Slick>
           <Indicator>
             <div>
@@ -41,12 +41,12 @@ const ImageZoom = ({ images, onClose }) => {
         </div>
       </SlickWrapper>
     </Overlay>
-  )
+  );
 };
 
 ImageZoom.propTypes = {
   images: PropTypes.arrayOf(PropTypes.object).isRequired,
-  onClose: PropTypes.func.isRequired
+  onClose: PropTypes.func.isRequired,
 };
 
 export default ImageZoom;
