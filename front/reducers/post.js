@@ -1,4 +1,5 @@
 import shortId from 'shortid';
+import produce from 'immer';
 
 const initialState = {
   addPostLoading: false,
@@ -87,41 +88,31 @@ const dummyComment = (data) => ({
   },
 });
 
-const reducer = (state = initialState, action) => {
+const reducer = (state = initialState, action) => (produce(state, (draft) => {
   switch (action.type) {
     case ADD_POST_REQUEST:
-      return {
-        ...state,
-        addPostLoading: true,
-        addPostDone: false,
-        addPostError: null,
-      };
+      draft.addPostLoading = true;
+      draft.addPostDone = false;
+      draft.addPostError = null;
+      break;
     case ADD_POST_SUCCESS:
-      return {
-        ...state,
-        addPostLoading: false,
-        addPostDone: true,
-        mainPosts: [dummyPost(action.data), ...state.mainPosts],
-        // postAdded: true
-      };
+      draft.addPostLoading = false;
+      draft.addPostDone = true;
+      draft.mainPosts.unshift(dummyPost(action.data));
+      break;
     case ADD_POST_ERROR:
-      return {
-        ...state,
-        addPostLoading: false,
-        addPostError: action.error,
-      };
+      draft.addPostLoading = false;
+      draft.addPostError = action.error;
+      break;
     case ADD_COMMENT_REQUEST:
-      return {
-        ...state,
-        addCommentLoading: true,
-        addCommentDone: false,
-        addCommentError: null,
-      };
-    case ADD_COMMENT_SUCCESS:
-      return {
-        ...state,
-        addCommentLoading: false,
-        addCommentDone: true,
+      draft.addCommentLoading = true;
+      draft.addCommentDone = false;
+      draft.addCommentError = null;
+      break;
+    case ADD_COMMENT_SUCCESS: {
+      const post = draft.mainPosts.find((v) => v.id === action.data.postId);
+      draft.addCommentLoading = false;
+      draft.addCommentDone = true;
         mainPosts: state.mainPosts.map((post) => (post.id === action.data.postId
           ? {
             ...post,
@@ -130,38 +121,29 @@ const reducer = (state = initialState, action) => {
               dummyComment(action.data),
             ],
           }
-          : post)),
-      };
+          : post))
+    }
     case ADD_COMMENT_ERROR:
-      return {
-        ...state,
-        addCommentLoading: false,
-        addCommentError: action.error,
-      };
+      draft.addCommentLoading = false;
+      draft.addCommentError = action.error;
+      break;
     case REMOVE_POST_REQUEST:
-      return {
-        ...state,
-        removePostLoading: true,
-        removePostDone: false,
-        removePostError: null,
-      };
+      draft.removePostLoading = true;
+      draft.removePostDone = false;
+      draft.removePostError = null;
+      break;
     case REMOVE_POST_SUCCESS:
-      return {
-        ...state,
-        removePostLoading: false,
-        removePostDone: true,
-        mainPosts: state.mainPosts.filter((v) => v.id !== action.data),
-        // postremoveed: true
-      };
+      draft.removePostLoading = false;
+      draft.removePostDone = true;
+      draft.mainPosts = draft.mainPosts.filter((v) => v.id !== action.data);
+      break;
     case REMOVE_POST_ERROR:
-      return {
-        ...state,
-        removePostLoading: false,
-        removePostError: action.error,
-      };
+      draft.removePostLoading = false;
+      draft.removePostError = action.error;
+      break;
     default:
-      return state;
+      break;
   }
-};
+}));
 
 export default reducer;
