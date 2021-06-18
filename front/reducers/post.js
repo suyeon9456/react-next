@@ -1,5 +1,6 @@
 import shortId from 'shortid';
 import produce from 'immer';
+import faker from 'faker';
 
 const initialState = {
   addPostLoading: false,
@@ -40,6 +41,26 @@ const initialState = {
   imagePaths: [],
   postAdded: false,
 };
+
+console.log(Array(30));
+
+initialState.mainPosts = initialState.mainPosts.concat(Array(30).fill().map(() => ({
+  id: shortId.generate(),
+  User: {
+    id: shortId.generate(),
+    nickname: faker.name.findName(),
+  },
+  content: faker.lorem.paragraph(),
+  Images: [{
+    src: faker.image.imageUrl(),
+  }],
+  Comments: [{
+    User: {
+      nickname: faker.name.findName(),
+    },
+    content: faker.lorem.sentence(),
+  }],
+})));
 
 export const ADD_POST_REQUEST = 'ADD_POST_REQUEST';
 export const ADD_POST_SUCCESS = 'ADD_POST_SUCCESS';
@@ -110,18 +131,11 @@ const reducer = (state = initialState, action) => (produce(state, (draft) => {
       draft.addCommentError = null;
       break;
     case ADD_COMMENT_SUCCESS: {
-      const post = draft.mainPosts.find((v) => v.id === action.data.postId);
       draft.addCommentLoading = false;
       draft.addCommentDone = true;
-        mainPosts: state.mainPosts.map((post) => (post.id === action.data.postId
-          ? {
-            ...post,
-            Comments: [
-              ...post.Comments,
-              dummyComment(action.data),
-            ],
-          }
-          : post))
+      const post = draft.mainPosts.find((v) => v.id === action.data.postId);
+      post.Comments.push(dummyComment(action.data));
+      break;
     }
     case ADD_COMMENT_ERROR:
       draft.addCommentLoading = false;
