@@ -132,6 +132,7 @@ const reducer = (state = initialState, action) => (produce(state, (draft) => {
     case FOLLOW_SUCCESS:
       draft.followLoading = false;
       draft.followDone = true;
+      draft.me.Followings.push({ id: action.data });
       break;
     case FOLLOW_ERROR:
       draft.followLoading = false;
@@ -145,6 +146,7 @@ const reducer = (state = initialState, action) => (produce(state, (draft) => {
     case UNFOLLOW_SUCCESS:
       draft.unfollowLoading = false;
       draft.unfollowDone = true;
+      draft.me.Followings = draft.me.Followings.filter((v) => v.id !== action.data);
       break;
     case UNFOLLOW_ERROR:
       draft.unfollowLoading = false;

@@ -14,12 +14,12 @@ function* login (action) {
     yield delay(2000);
     yield put({
       type: LOG_IN_SUCCESS,
-      data: action.data
+      data: action.data,
     });
   } catch (e) {
     yield put({
       type: LOG_IN_ERROR,
-      error: e.response.data
+      error: e.response.data,
     });
   }
 }
@@ -64,72 +64,74 @@ function* signup () {
   }
 }
 
-function followAPI () {
+function followAPI() {
   const result = axios.get('/api/follow');
   return result.data;
 }
 
-function* follow () {
+function* follow(action) {
   try {
     // const data = yeild call(followAPI);
     yield delay(2000);
     yield put({
-      type: FOLLOW_SUCCESS
+      type: FOLLOW_SUCCESS,
+      data: action.data,
     });
   } catch (e) {
     yield put({
       type: FOLLOW_ERROR,
-      error: e.response.data
+      error: e.response.data,
     });
   }
 }
 
-function unfollowAPI () {
+function unfollowAPI() {
   const result = axios.get('/api/unfollow');
   return result.data;
 }
 
-function* unfollow () {
+function* unfollow(action) {
   try {
     // const data = yeild call(unfollowAPI);
     yield delay(2000);
     yield put({
-      type: UNFOLLOW_SUCCESS
+      type: UNFOLLOW_SUCCESS,
+      data: action.data,
     });
   } catch (e) {
     yield put({
       type: UNFOLLOW_ERROR,
-      error: e.response.data
+      error: e.response.data,
     });
   }
 }
 
-function* watchLogin () {
+function* watchLogin() {
   yield takeLatest(LOG_IN_REQUEST, login);
 }
 
-function* watchLogout () {
+function* watchLogout() {
   yield takeLatest(LOG_OUT_REQUEST, logout);
 }
 
-function* watchSignUp () {
+function* watchSignUp() {
   yield takeLatest(SIGN_UP_REQUEST, signup);
 }
 
-function* watchFollow () {
+function* watchFollow() {
   yield takeLatest(FOLLOW_REQUEST, follow);
 }
 
-function* watchUnFollow () {
+function* watchUnFollow() {
   yield takeLatest(UNFOLLOW_REQUEST, unfollow);
 }
 
-export default function* userSaga () {
+export default function* userSaga() {
   yield all([
     yield fork(watchLogin),
     yield fork(watchLogout),
     yield fork(watchSignUp),
     yield fork(watchFollow),
-    yield fork(watchUnFollow)
+    yield fork(watchUnFollow),
   ]);
 }
