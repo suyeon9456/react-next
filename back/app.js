@@ -7,7 +7,12 @@ const postRouter = require('./routes/post');
 //   res.end('node server5');
 // });
 const app = express();
-
+const db = require('./models');
+db.sequelize.sync()
+  .then(() => {
+    console.log('db 연결d 성공!');
+  }).catch(console.error);
+// 처음 데이터베이스 생성할 땐 npx sequelize db:create
 app.get('/', (req, res) => {
   res.send('hello node');
 });

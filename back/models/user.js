@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-  const User = sequelize.define({ // mssql에는 users로 생성됨
+  const User = sequelize.define('User', { // mssql에는 users로 생성됨
     email: {
       type: DataTypes.STRING(20),
       allowNull: false,
@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   }, {
     charset: 'utf8',
-    collate: 'utf8-general-ci'
+    collate: 'utf8_general_ci'
   });
   User.associate = (db) => {
     db.User.hasMany(db.Post);
