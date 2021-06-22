@@ -4,10 +4,14 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.TEXT,
       allowNull: false,
     }
+    // PostId, UserId 생성됨
   }, {
     charset: 'utf8mb4',
     collate: 'utf8mb4-general-ci'
   });
-  Comment.associate = (db) => {};
+  Comment.associate = (db) => {
+    db.Comment.belongsTo(db.Post);
+    db.Comment.belongsTo(db.User);
+  };
   return Comment;
 };

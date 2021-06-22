@@ -8,6 +8,8 @@ module.exports = (sequelize, DataTypes) => {
     charset: 'utf8mb4',
     collate: 'utf8mb4-general-ci'
   });
-  Hashtag.associate = (db) => {};
+  Hashtag.associate = (db) => {
+    db.Hashtag.belongsToMany(db.Post); // 중간 db가 생기고 그 db에 PostId, HashtagId가 생성됨
+  };
   return Hashtag;
 };
