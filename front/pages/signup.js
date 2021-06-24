@@ -3,15 +3,18 @@ import Head from 'next/head';
 import { Form, Input, Checkbox, Button } from 'antd';
 // import Link from 'next/link';
 import styled from 'styled-components';
+import { useDispatch } from 'react-redux';
 import useInput from '../hooks/useInput';
 import AppLayout from '../components/AppLayout';
+import { SIGN_UP_REQUEST } from '../reducers/user';
 
 const ErrorMessage = styled.div`
   color: red;
 `;
 
 const Signup = () => {
-  const [id, onChangeId] = useInput('');
+  const dispatch = useDispatch();
+  const [email, onChangeEmail] = useInput('');
   const [password, onChangePassword] = useInput('');
   const [nickname, onChangeNickname] = useInput('');
 
@@ -25,7 +28,7 @@ const Signup = () => {
   const [term, setTerm] = useState(false);
   const [termError, setTermError] = useState(false);
   const onChangeTerm = useCallback((e) => {
-    console.log(e.target.checked)
+    console.log(e.target.checked);
     setTerm(e.target.checked);
     setTermError(!e.target.checked);
   }, []);
@@ -38,7 +41,11 @@ const Signup = () => {
     if (!term) {
       return setTermError(true);
     }
-  }, [id, password, nickname, term]);
+    dispatch({
+      type: SIGN_UP_REQUEST,
+      data: { email, password, nickname },
+    });
+  }, [email, password, nickname, term]);
 
   return (
     <AppLayout>
@@ -47,9 +54,9 @@ const Signup = () => {
       </Head>
       <Form onFinish={onSubmitForm}>
         <div>
-          <label htmlFor="user-id">ID</label>
+          <label htmlFor="user-email">EMAIL</label>
           <br />
-          <Input name="user-id" value={id} required onChange={onChangeId} />
+          <Input type="email" name="user-email" value={email} required onChange={onChangeEmail} />
         </div>
         <div>
           <label htmlFor="user-nickname">NICKNAME</label>

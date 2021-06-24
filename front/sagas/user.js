@@ -1,4 +1,4 @@
-import { all, delay, fork, put, takeLatest } from 'redux-saga/effects';
+import { all, delay, fork, put, takeLatest, call } from 'redux-saga/effects';
 import axios from 'axios';
 import { FOLLOW_ERROR, FOLLOW_REQUEST, FOLLOW_SUCCESS, LOG_IN_ERROR, LOG_IN_REQUEST, LOG_IN_SUCCESS, LOG_OUT_ERROR, LOG_OUT_REQUEST, LOG_OUT_SUCCESS, SIGN_UP_ERROR, SIGN_UP_REQUEST, SIGN_UP_SUCCESS, UNFOLLOW_ERROR, UNFOLLOW_REQUEST, UNFOLLOW_SUCCESS } from '../reducers/user';
 
@@ -29,37 +29,38 @@ function logoutAPI () {
   return result.data;
 }
 
-function* logout () {
+function* logout() {
   try {
     // const data = yeild call(logoutAPI);
     yield delay(2000);
     yield put({
-      type: LOG_OUT_SUCCESS
+      type: LOG_OUT_SUCCESS,
     });
   } catch (e) {
     yield put({
       type: LOG_OUT_ERROR,
-      error: e.response.data
+      error: e.response.data,
     });
   }
 }
 
-function signupAPI () {
-  const result = axios.get('/api/signup');
-  return result.data;
+function signupAPI(data) {
+  const result = axios.get('http://localhost:3065/user', data);
+  return result;
 }
 
-function* signup () {
+function* signup(action) {
   try {
-    // const data = yeild call(signupAPI);
-    yield delay(2000);
+    const res = yield call(signupAPI, action.data);
+    // yield delay(2000);
+    console.log(res);
     yield put({
-      type: SIGN_UP_SUCCESS
+      type: SIGN_UP_SUCCESS,
     });
   } catch (e) {
     yield put({
       type: SIGN_UP_ERROR,
-      error: e.response.data
+      error: e.response.data,
     });
   }
 }
