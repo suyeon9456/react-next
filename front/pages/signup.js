@@ -1,9 +1,9 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Head from 'next/head';
 import { Form, Input, Checkbox, Button } from 'antd';
-// import Link from 'next/link';
+import Router from 'next/router';
 import styled from 'styled-components';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import useInput from '../hooks/useInput';
 import AppLayout from '../components/AppLayout';
 import { SIGN_UP_REQUEST } from '../reducers/user';
@@ -14,12 +14,26 @@ const ErrorMessage = styled.div`
 
 const Signup = () => {
   const dispatch = useDispatch();
+  const { signupLoading, signupDone, signupError } = useSelector((state) => state.user);
   const [email, onChangeEmail] = useInput('');
   const [password, onChangePassword] = useInput('');
   const [nickname, onChangeNickname] = useInput('');
 
   const [passwordCheck, setPasswordCheck] = useState('');
   const [passwordError, setPasswordError] = useState(false);
+
+  useEffect(() => {
+    if (signupDone) {
+      Router.push('/');
+    }
+  }, [signupDone]);
+
+  useEffect(() => {
+    if (signupError) {
+      alert(signupError);
+    }
+  }, [signupError]);
+
   const onChangePasswordCheck = useCallback((e) => {
     setPasswordCheck(e.target.value);
     setPasswordError(password !== e.target.value);
@@ -28,7 +42,6 @@ const Signup = () => {
   const [term, setTerm] = useState(false);
   const [termError, setTermError] = useState(false);
   const onChangeTerm = useCallback((e) => {
-    console.log(e.target.checked);
     setTerm(e.target.checked);
     setTermError(!e.target.checked);
   }, []);
@@ -66,12 +79,12 @@ const Signup = () => {
         <div>
           <label htmlFor="user-password">PASSWORD</label>
           <br />
-          <Input name="user-password" value={password} required onChange={onChangePassword} />
+          <Input type="password" name="user-password" value={password} required onChange={onChangePassword} />
         </div>
         <div>
           <label htmlFor="user-password-check">PASSWORD CHECK</label>
           <br />
-          <Input name="user-password-check" value={passwordCheck} required onChange={onChangePasswordCheck} />
+          <Input type="password" name="user-password-check" value={passwordCheck} required onChange={onChangePasswordCheck} />
           {passwordError && <ErrorMessage>비밀번호가 다릅니다.</ErrorMessage>}
         </div>
         <div>
@@ -79,7 +92,7 @@ const Signup = () => {
           {termError && <ErrorMessage>개인정보 동의 체크해주세요.</ErrorMessage>}
         </div>
         <div style={{ marginTop: 10 }}>
-          <Button type="primary" htmlType="submit">가입하기</Button>
+          <Button type="primary" htmlType="submit" loading={signupLoading}>가입하기</Button>
         </div>
       </Form>
     </AppLayout>

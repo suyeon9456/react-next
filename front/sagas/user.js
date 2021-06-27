@@ -2,24 +2,26 @@ import { all, delay, fork, put, takeLatest, call } from 'redux-saga/effects';
 import axios from 'axios';
 import { FOLLOW_ERROR, FOLLOW_REQUEST, FOLLOW_SUCCESS, LOG_IN_ERROR, LOG_IN_REQUEST, LOG_IN_SUCCESS, LOG_OUT_ERROR, LOG_OUT_REQUEST, LOG_OUT_SUCCESS, SIGN_UP_ERROR, SIGN_UP_REQUEST, SIGN_UP_SUCCESS, UNFOLLOW_ERROR, UNFOLLOW_REQUEST, UNFOLLOW_SUCCESS } from '../reducers/user';
 
-function loginAPI (data) {
-  const result = axios.get('/api/login', data);
-  return result.data;
+function loginAPI(data) {
+  const result = axios.post('/user/login', data);
+  console.log('result: ', result);
+  return result;
 }
 
-function* login (action) {
+function* login(action) {
   console.log('userSaga', action);
   try {
-    // const data = yeild call(loginAPI, action.data);
+    const result = yield call(loginAPI, action.data);
+    console.log('result: ', result);
     yield delay(2000);
     yield put({
       type: LOG_IN_SUCCESS,
-      data: action.data,
+      data: result,
     });
   } catch (e) {
     yield put({
       type: LOG_IN_ERROR,
-      error: e.response.data,
+      error: e.response,
     });
   }
 }
@@ -45,7 +47,7 @@ function* logout() {
 }
 
 function signupAPI(data) {
-  const result = axios.get('http://localhost:3065/user', data);
+  const result = axios.post('/user', data);
   return result;
 }
 

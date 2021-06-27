@@ -1,4 +1,5 @@
 const express = require('express'); // 노드가 서버가 아니라 노드에서 제공하는 http 모듈이 서버
+const cors = require('cors');
 const postRouter = require('./routes/post');
 const userRouter = require('./routes/user');
 // const server = http.createServer((req, res)=> {
@@ -10,11 +11,20 @@ const userRouter = require('./routes/user');
 const app = express();
 
 const db = require('./models');
+const passportConfig = require('./passport');
+
 db.sequelize.sync()
   .then(() => {
     console.log('db 연결d 성공!');
   }).catch(console.error);
 // 처음 데이터베이스 생성할 땐 npx sequelize db:create
+passportConfig();
+
+app.use(cors({
+  // origin: 'localhost:3060'
+  origin: '*',
+  // credentials: false // 기본값 false
+})) // header에 Access-Control-Allow-Origin를 추가해줌
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
