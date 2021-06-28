@@ -28,24 +28,31 @@ router.post('/', async (req, res, next) => {
 });
 
 router.post('/login', (req, res, next) => {
-  console.log('??');
+  console.log('??', req.body);
   passport.authenticate('local', (err, user, info) => {
+    console.log('?????????', err);
     if(err) {
       console.log('err: ', err);
       return next(err);
     }
     if(info) {
-
-      console.log(info);
-      return res.status(403).send(info.reason);
+      console.log('info', info);
+      return res.status(401).send(info.reason);
     }
     return req.login(user, (loginErr) => { // 진짜 로그인하는 (우리서비스의 로그인이 끝나고 passport에서 로그인)
       if(loginErr) {
-        console.log('loginErr: ', loginErr);
         return next(loginErr);
       }
-      return res.json(user);
+      // res.setHeader('Cookie', 무작위 토큰)
+      return res.status(200).json(user);
     })
   })(req, res, next)
-})
+});
+
+router.post('/logout', (req, res, next) => {
+  console.log(req.user);
+  req.logout();
+  req.session.destroy(); //세션에 저장된 쿠키와 아이디 삭제
+  res.send('ok');
+});
 module.exports = router;

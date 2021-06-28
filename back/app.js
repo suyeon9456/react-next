@@ -1,5 +1,10 @@
 const express = require('express'); // 노드가 서버가 아니라 노드에서 제공하는 http 모듈이 서버
 const cors = require('cors');
+const passport = require('passport');
+const session = require('express-session');
+const cookieParser = require('cookie-parser');
+const dotenv = require('dotenv');
+
 const postRouter = require('./routes/post');
 const userRouter = require('./routes/user');
 // const server = http.createServer((req, res)=> {
@@ -8,6 +13,7 @@ const userRouter = require('./routes/user');
 //   res.write('node Server2');
 //   res.end('node server5');
 // });
+dotenv.config();
 const app = express();
 
 const db = require('./models');
@@ -22,12 +28,21 @@ passportConfig();
 
 app.use(cors({
   // origin: 'localhost:3060'
-  origin: '*',
-  // credentials: false // 기본값 false
-})) // header에 Access-Control-Allow-Origin를 추가해줌
+  origin: 'http://localhost:3060',
+  credentials: true // 기본값 false
+})); // header에 Access-Control-Allow-Origin를 추가해줌
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.use(cookieParser('nodebirdsecret'));
+app.use(session({
+  saveUninitialized: false,
+  resave: false,
+  secret: process.env.COOKIE_SECRET,
+}));
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.get('/', (req, res) => {
   res.send('hello node');

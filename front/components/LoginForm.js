@@ -19,7 +19,7 @@ const LoginForm = () => {
   const [userPassword, onChangePassword] = useInput('');
 
   const onLogin = useCallback(() => {
-    dispatch(loginAction({ id: userEmail, password: userPassword }));
+    dispatch(loginAction({ email: userEmail, password: userPassword }));
   }, [userEmail, userPassword]);
 
   return (
