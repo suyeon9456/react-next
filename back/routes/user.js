@@ -1,10 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
-const { User, Post } = require('../models');
 const passport = require('passport');
+const { User, Post } = require('../models');
+const { isNotLoggedIn, isLoggedIn } = require('./middlewares');
 
-router.post('/', async (req, res, next) => {
+router.post('/', isNotLoggedIn, async (req, res, next) => {
   try {
     const exEmail = await User.findOne({
       where: {
@@ -27,16 +28,13 @@ router.post('/', async (req, res, next) => {
   }
 });
 
-router.post('/login', (req, res, next) => {
-  console.log('??', req.body);
+router.post('/login', isNotLoggedIn, (req, res, next) => {
   passport.authenticate('local', (err, user, info) => {
-    console.log('?????????', err);
     if(err) {
       console.log('err: ', err);
       return next(err);
     }
     if(info) {
-      console.log('info', info);
       return res.status(401).send(info.reason);
     }
     return req.login(user, async (loginErr) => { // 진짜 로그인하는 (우리서비스의 로그인이 끝나고 passport에서 로그인)
@@ -64,7 +62,7 @@ router.post('/login', (req, res, next) => {
   })(req, res, next)
 });
 
-router.post('/logout', (req, res, next) => {
+router.post('/logout', isLoggedIn, (req, res, next) => {
   console.log(req.user);
   req.logout();
   req.session.destroy(); //세션에 저장된 쿠키와 아이디 삭제
