@@ -29,7 +29,7 @@ passportConfig();
 app.use(cors({
   // origin: 'localhost:3060'
   origin: 'http://localhost:3060',
-  credentials: true // 기본값 false
+  credentials: true // 기본값 false true 여야 cookie도 같이 전달됨
 })); // header에 Access-Control-Allow-Origin를 추가해줌
 
 app.use(express.json());
