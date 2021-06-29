@@ -13,14 +13,12 @@ const UserProfile = () => {
     dispatch(logoutAction());
   }, []);
 
-  console.log('Posts', Posts);
-
   return (
     <Card
       actions={[
-        <div key="twit">트윗<br /> {Posts?.length}</div>,
-        <div key="followings">팔로잉<br /> {Followings?.length}</div>,
-        <div key="followers">팔로워<br /> {Followers?.length}</div>,
+        <div key="twit">트윗<br /> {Posts.length}</div>,
+        <div key="followings">팔로잉<br /> {Followings.length}</div>,
+        <div key="followers">팔로워<br /> {Followers.length}</div>,
       ]}
     >
       <Card.Meta

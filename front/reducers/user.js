@@ -83,6 +83,7 @@ const reducer = (state = initialState, action) => (produce(state, (draft) => {
       break;
     case LOG_IN_ERROR:
       draft.loginError = action.error;
+      draft.loginLoading = false;
       break;
     case LOG_OUT_REQUEST:
       draft.logOutLoading = true;

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
-const { User } = require('../models');
+const { User, Post } = require('../models');
 const passport = require('passport');
 
 router.post('/', async (req, res, next) => {
@@ -39,12 +39,27 @@ router.post('/login', (req, res, next) => {
       console.log('info', info);
       return res.status(401).send(info.reason);
     }
-    return req.login(user, (loginErr) => { // 진짜 로그인하는 (우리서비스의 로그인이 끝나고 passport에서 로그인)
+    return req.login(user, async (loginErr) => { // 진짜 로그인하는 (우리서비스의 로그인이 끝나고 passport에서 로그인)
       if(loginErr) {
         return next(loginErr);
       }
       // res.setHeader('Cookie', 무작위 토큰)
-      return res.status(200).json(user);
+      const userWithoutPassword = await User.findOne({
+        where: { id: user.id },
+        attributes: {
+          exclude: ['password']
+        },  
+        include: [{
+          model: Post
+        }, {
+          model: User,
+          as: 'Followings'
+        }, {
+          model: User,
+          as: 'Followers'
+        }]
+      });
+      return res.status(200).json(userWithoutPassword);
     })
   })(req, res, next)
 });

@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
+import Router from 'next/router';
 import Link from 'next/link';
 import { Menu, Input, Row, Col } from 'antd';
 import styled from 'styled-components';
@@ -13,7 +14,7 @@ const SearchInput = styled(Input.Search)`
 `;
 
 const AppLayout = ({ children }) => {
-  const { loginDone } = useSelector((state) => state.user);
+  const { loginDone, me } = useSelector((state) => state.user);
 
   return (
     <div>
@@ -27,9 +28,14 @@ const AppLayout = ({ children }) => {
         <Menu.Item key="search">
           <SearchInput enterButton style={{ verticalAlign: 'middle' }} />
         </Menu.Item>
-        <Menu.Item key="signup">
-          <Link href="/signup"><a>SIGNUP</a></Link>
-        </Menu.Item>
+        {
+          me && me.id
+          && (
+            <Menu.Item key="signup">
+              <Link href="/signup"><a>SIGNUP</a></Link>
+            </Menu.Item>
+          )
+        }
       </Menu>
       <Row>
         <Col xs={24} md={6}>

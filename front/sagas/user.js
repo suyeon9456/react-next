@@ -9,19 +9,17 @@ function loginAPI(data) {
 }
 
 function* login(action) {
-  console.log('userSaga', action);
   try {
     const result = yield call(loginAPI, action.data);
-    console.log('result: ', result);
     yield delay(2000);
     yield put({
       type: LOG_IN_SUCCESS,
-      data: result,
+      data: result.data,
     });
   } catch (e) {
     yield put({
       type: LOG_IN_ERROR,
-      error: e.response,
+      error: e.response.data,
     });
   }
 }
