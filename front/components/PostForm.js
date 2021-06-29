@@ -22,7 +22,7 @@ const PostForm = () => {
   }, [imageRef.current]);
 
   const onSubmit = useCallback(() => {
-    dispatch(addPost(text));
+    dispatch(addPost({ content: text }));
   }, [text]);
 
   return (
