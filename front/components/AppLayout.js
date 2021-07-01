@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
-import Router from 'next/router';
+// import Router from 'next/router';
 import Link from 'next/link';
 import { Menu, Input, Row, Col } from 'antd';
 import styled from 'styled-components';
@@ -14,7 +14,7 @@ const SearchInput = styled(Input.Search)`
 `;
 
 const AppLayout = ({ children }) => {
-  const { loginDone, me } = useSelector((state) => state.user);
+  const { loadMyInfoDone, loginDone, me } = useSelector((state) => state.user);
 
   return (
     <div>
@@ -39,21 +39,21 @@ const AppLayout = ({ children }) => {
       </Menu>
       <Row>
         <Col xs={24} md={6}>
-          {loginDone ? <UserProfile /> : <LoginForm />}
+          {loginDone || loadMyInfoDone ? <UserProfile /> : <LoginForm />}
         </Col>
         <Col xs={24} md={12}>
           {children}
         </Col>
         <Col xs={24} md={6}>
-          <a href="https://www.naver.com" target="blank" rel="noreferrer noopener" >www.naver.com</a>
+          <a href="https://www.naver.com" target="blank" rel="noreferrer noopener">www.naver.com</a>
         </Col>
       </Row>
     </div>
-  )
+  );
 };
 
 AppLayout.propTypes = {
-  children: PropTypes.node.isRequired
+  children: PropTypes.node.isRequired,
 };
 
 // TODO... propTypes가 부족

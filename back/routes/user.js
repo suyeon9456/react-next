@@ -5,6 +5,42 @@ const passport = require('passport');
 const { User, Post } = require('../models');
 const { isNotLoggedIn, isLoggedIn } = require('./middlewares');
 
+router.get('/', async (req, res, next) => {
+  try {
+    console.log('?', req.user.id);
+    if(req.user) {
+      const user = await User.findOne({
+        where: { id: req.user.id }
+      });
+      console.log('user', user);
+      const userWithoutPassword = await User.findOne({
+        where: { id: user.id },
+        attributes: {
+          exclude: ['password']
+        },  
+        include: [{
+          model: Post,
+          attributes: ['id'],
+        }, {
+          model: User,
+          as: 'Followings',
+          attributes: ['id'],
+        }, {
+          model: User,
+          as: 'Followers',
+          attributes: ['id'],
+        }]
+      });
+      return res.status(200).json(userWithoutPassword);
+    } else {
+      res.status(200).json(null);
+    }
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+})
+
 router.post('/', isNotLoggedIn, async (req, res, next) => {
   try {
     const exEmail = await User.findOne({

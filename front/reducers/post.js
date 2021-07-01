@@ -3,6 +3,12 @@ import produce from 'immer';
 import faker from 'faker';
 
 const initialState = {
+  likePostLoading: false,
+  likePostDone: false,
+  likePostError: null,
+  unlikePostLoading: false,
+  unlikePostDone: false,
+  unlikePostError: null,
   loadPostsLoading: false,
   loadPostsDone: false,
   loadPostsError: null,
@@ -38,6 +44,14 @@ export const dummyLoadPosts = (number) => (Array(number).fill().map(() => ({
     content: faker.lorem.sentence(),
   }],
 })));
+
+export const LIKE_POST_REQUEST = 'LIKE_POST_REQUEST';
+export const LIKE_POST_SUCCESS = 'LIKE_POST_SUCCESS';
+export const LIKE_POST_ERROR = 'LIKE_POST_ERROR';
+
+export const UNLIKE_POST_REQUEST = 'UNLIKE_POST_REQUEST';
+export const UNLIKE_POST_SUCCESS = 'UNLIKE_POST_SUCCESS';
+export const UNLIKE_POST_ERROR = 'UNLIKE_POST_ERROR';
 
 export const LOAD_POSTS_REQUEST = 'LOAD_POSTS_REQUEST';
 export const LOAD_POSTS_SUCCESS = 'LOAD_POSTS_SUCCESS';
@@ -81,17 +95,49 @@ export const removePost = (data) => ({
 //   Comments: [],
 // });
 
-const dummyComment = (data) => ({
-  id: shortId.generate(),
-  content: data.comment,
-  User: {
-    id: data.id,
-    nickname: 'suyeon',
-  },
-});
+// const dummyComment = (data) => ({
+//   id: shortId.generate(),
+//   content: data.comment,
+//   User: {
+//     id: data.id,
+//     nickname: 'suyeon',
+//   },
+// });
 
 const reducer = (state = initialState, action) => (produce(state, (draft) => {
   switch (action.type) {
+    case LIKE_POST_REQUEST:
+      draft.likePostLoading = true;
+      draft.likePostDone = false;
+      draft.likePostError = null;
+      break;
+    case LIKE_POST_SUCCESS: {
+      draft.likePostLoading = false;
+      const post = draft.mainPosts.find((v) => v.id === action.data.PostId);
+      post.Liker.push(action.data.UserId);
+      draft.likePostDone = true;
+      break;
+    }
+    case LIKE_POST_ERROR:
+      draft.likePostLoading = false;
+      draft.likePostError = action.error;
+      break;
+    case UNLIKE_POST_REQUEST:
+      draft.unlikePostLoading = true;
+      draft.unlikePostDone = false;
+      draft.unlikePostError = null;
+      break;
+    case UNLIKE_POST_SUCCESS: {
+      draft.unlikePostLoading = false;
+      const post = draft.mainPosts.find((v) => v.id === action.data.PostId);
+      post.Liker = post.Liker.filter((v) => v.id !== action.data.UserId);
+      draft.unlikePostDone = true;
+      break;
+    }
+    case UNLIKE_POST_ERROR:
+      draft.unlikePostLoading = false;
+      draft.unlikePostError = action.error;
+      break;
     case LOAD_POSTS_REQUEST:
       draft.loadPostsLoading = true;
       draft.loadPostsDone = false;
@@ -129,8 +175,8 @@ const reducer = (state = initialState, action) => (produce(state, (draft) => {
     case ADD_COMMENT_SUCCESS: {
       draft.addCommentLoading = false;
       draft.addCommentDone = true;
-      const post = draft.mainPosts.find((v) => v.id === action.data.postId);
-      post.Comments.push(dummyComment(action.data));
+      const post = draft.mainPosts.find((v) => v.id === action.data.PostId);
+      post.Comments.push(action.data);
       break;
     }
     case ADD_COMMENT_ERROR:

@@ -7,7 +7,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import PostImages from './PostImages';
 import CommentForm from './CommentForm';
 import PostContent from './PostContent';
-import { removePost } from '../reducers/post';
+import { LIKE_POST_REQUEST, removePost, UNLIKE_POST_REQUEST } from '../reducers/post';
 import FollowButton from './FollowButton';
 
 const PostCard = ({ post }) => {
@@ -15,18 +15,30 @@ const PostCard = ({ post }) => {
   const me = useSelector((state) => state.user.me);
   const dispatch = useDispatch();
   const { removePostLoading } = useSelector((state) => state.post);
-  const [liked, setLiked] = useState(false);
+  // const [liked, setLiked] = useState(false);
   const [commentsOpen, setCommentsOpen] = useState(false);
 
-  const onToggleLiked = useCallback(() => {
-    setLiked((prev) => !prev);
+  const onLiked = useCallback(() => {
+    dispatch({
+      type: LIKE_POST_REQUEST,
+      data: post.id,
+    });
   }, []);
+  const onUnLiked = useCallback(() => {
+    dispatch({
+      type: UNLIKE_POST_REQUEST,
+      data: post.id,
+    });
+  }, []);
+
   const onToggleCommentsOpen = useCallback(() => {
     setCommentsOpen((prev) => !prev);
   }, []);
   const delPost = useCallback(() => {
     dispatch(removePost(post.id));
   }, []);
+
+  const liked = post.Liker.find((v) => v.id === id);
 
   return (
     <div>
@@ -35,8 +47,8 @@ const PostCard = ({ post }) => {
         actions={[
           <RetweetOutlined key="retweet" />,
           liked
-            ? <HeartTwoTone twoToneColor="#eb2f96" key="heart" onClick={onToggleLiked} />
-            : <HeartOutlined key="heart" onClick={onToggleLiked} />,
+            ? <HeartTwoTone twoToneColor="#eb2f96" key="heart" onClick={onUnLiked} />
+            : <HeartOutlined key="heart" onClick={onLiked} />,
           <MessageOutlined key="message" onClick={onToggleCommentsOpen} />,
           <Popover
             key="ellipsis"
@@ -94,9 +106,10 @@ PostCard.propTypes = {
     id: PropTypes.number,
     User: PropTypes.object,
     content: PropTypes.string,
-    createdAt: PropTypes.object,
+    createdAt: PropTypes.string,
     Comments: PropTypes.arrayOf(PropTypes.any),
     Images: PropTypes.arrayOf(PropTypes.any),
+    Liker: PropTypes.arrayOf(PropTypes.any),
   }).isRequired,
 };
 

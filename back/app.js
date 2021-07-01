@@ -4,7 +4,9 @@ const passport = require('passport');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const dotenv = require('dotenv');
+const morgan = require('morgan');
 
+const postsRouter = require('./routes/posts');
 const postRouter = require('./routes/post');
 const userRouter = require('./routes/user');
 // const server = http.createServer((req, res)=> {
@@ -25,6 +27,8 @@ db.sequelize.sync()
   }).catch(console.error);
 // 처음 데이터베이스 생성할 땐 npx sequelize db:create
 passportConfig();
+
+app.use(morgan('dev'));
 
 app.use(cors({
   // origin: 'localhost:3060'
@@ -53,14 +57,15 @@ app.get('/api', (req, res) => {
   res.send('hello api');
 });
 
-app.get('/posts', (req, res) => {
-  res.json([
-    { id: 1, content: 'test1' },
-    { id: 2, content: 'test2' },
-    { id: 3, content: 'test3' }
-  ])
-})
+// app.get('/posts', (req, res) => {
+//   res.json([
+//     { id: 1, content: 'test1' },
+//     { id: 2, content: 'test2' },
+//     { id: 3, content: 'test3' }
+//   ])
+// })
 
+app.use('/posts', postsRouter);
 app.use('/post', postRouter);
 app.use('/user', userRouter);
 
