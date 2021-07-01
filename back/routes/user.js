@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt');
 const passport = require('passport');
 const { User, Post } = require('../models');
 const { isNotLoggedIn, isLoggedIn } = require('./middlewares');
+const { route } = require('./post');
 
 router.get('/', async (req, res, next) => {
   try {
@@ -104,4 +105,19 @@ router.post('/logout', isLoggedIn, (req, res, next) => {
   req.session.destroy(); //세션에 저장된 쿠키와 아이디 삭제
   res.send('ok');
 });
+
+router.patch('/nickname', isLoggedIn, async (req, res, next) => {
+  try {
+    await User.update({
+      nickname: req.body.nickname
+    }, {
+      where: { id: req.user.id }
+    });
+    res.json({ nickname: req.body.nickname });
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
+
 module.exports = router;

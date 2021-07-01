@@ -1,4 +1,4 @@
-import { all, delay, fork, put, takeLatest, throttle, call } from 'redux-saga/effects';
+import { all, fork, put, takeLatest, throttle, call } from 'redux-saga/effects';
 import axios from 'axios';
 // import shortId from 'shortid';
 import { ADD_COMMENT_ERROR, ADD_COMMENT_REQUEST, ADD_COMMENT_SUCCESS, ADD_POST_ERROR, ADD_POST_REQUEST, ADD_POST_SUCCESS, LIKE_POST_ERROR, LIKE_POST_REQUEST, LIKE_POST_SUCCESS, LOAD_POSTS_ERROR, LOAD_POSTS_REQUEST, LOAD_POSTS_SUCCESS, REMOVE_POST_ERROR, REMOVE_POST_REQUEST, REMOVE_POST_SUCCESS, UNLIKE_POST_ERROR, UNLIKE_POST_REQUEST, UNLIKE_POST_SUCCESS } from '../reducers/post';
@@ -9,7 +9,6 @@ function likePostAPI(data) {
 }
 
 function* likePost(action) {
-  console.log('action', action);
   try {
     const result = yield call(likePostAPI, action.data);
     yield put({
@@ -66,9 +65,7 @@ function* loadPosts(action) {
 }
 
 function addPostAPI(data) {
-  console.log('content:', data);
-  const result = axios.post('/post', data);
-  return result;
+  return axios.post('/post', data);
 }
 
 function* addPost(action) {
@@ -115,24 +112,22 @@ function* addComment(action) {
 }
 
 function removePostAPI(data) {
-  const result = axios.delete('/api/post', data);
-  return result.data;
+  return axios.delete(`/post/${data}`);
 }
 
 function* removePost(action) {
   try {
-    // const data = yeild call(removePostAPI, action.data);
-    yield delay(2000);
+    const result = yield call(removePostAPI, action.data);
     yield put({
       type: REMOVE_POST_SUCCESS,
-      data: action.data,
+      data: result.data,
     });
-    console.log('action', action);
     yield put({
       type: REMOVE_POST_TO_ME,
-      data: action.data,
+      data: result.data.PostId,
     });
   } catch (e) {
+    console.error(e);
     yield put({
       type: REMOVE_POST_ERROR,
       error: e.response.data,

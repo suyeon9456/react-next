@@ -21,7 +21,7 @@ router.post('/', isLoggedIn, async (req, res, next) => {
       }, {
         model: User,
         as: 'Liker',
-        attribute: ['id'],
+        attributes: ['id'],
       }]
     })
     res.status(201).json(fullPost);
@@ -32,7 +32,6 @@ router.post('/', isLoggedIn, async (req, res, next) => {
 });
 
 router.post('/:postId/comment', isLoggedIn, async (req, res, next) => {
-  console.log('req.body::::', req.body);
   try {
     const post = await Post.findOne({
       where: { id: req.params.postId }
@@ -51,7 +50,7 @@ router.post('/:postId/comment', isLoggedIn, async (req, res, next) => {
       where: { id: comment.id },
       include: [{
         model: User,
-        attribute: ['id', 'nickname'],
+        attributes: ['id', 'nickname'],
       }]
     });
 
@@ -67,7 +66,6 @@ router.patch('/:postId/like', isLoggedIn, async (req, res, next) => {
     const post = await Post.findOne({
       where: { id: req.params.postId }
     })
-    console.log(req.params.postId);
     if(!post) {
       return res.status(403).send('해당 게시물이 존재하지 않습니다.');
     }
@@ -80,7 +78,6 @@ router.patch('/:postId/like', isLoggedIn, async (req, res, next) => {
 });
 
 router.delete('/:postId/like', isLoggedIn, async (req, res, next) => {
-  console.log('들어옴>>');
   try {
     const post = await Post.findOne({
       where: { id: req.params.postId }
@@ -92,6 +89,21 @@ router.delete('/:postId/like', isLoggedIn, async (req, res, next) => {
     res.json({ PostId: post.id, UserId: req.user.id });
   } catch (error) {
     console.log(error);
+    next(error);
+  }
+});
+
+router.delete('/:postId', isLoggedIn, async (req, res, next) => {
+  try {
+    await Post.destroy({
+      where: { 
+        id: req.params.postId,
+        UserId: req.user.id
+      }
+    });
+    res.json({ PostId: parseInt(req.params.postId, 10) });
+  } catch (error) {
+    console.error(error);
     next(error);
   }
 });

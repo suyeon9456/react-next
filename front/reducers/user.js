@@ -137,6 +137,7 @@ const reducer = (state = initialState, action) => (produce(state, (draft) => {
       draft.changeNicknameLoading = true;
       draft.changeNicknameDone = false;
       draft.changeNicknameError = null;
+      draft.me.nickname = action.data.nickname;
       break;
     case CHANGE_NICKNAME_SUCCESS:
       draft.changeNicknameLoading = false;
@@ -175,7 +176,7 @@ const reducer = (state = initialState, action) => (produce(state, (draft) => {
       draft.unfollowError = action.error;
       break;
     case ADD_POST_TO_ME:
-      draft.me.Posts = draft.me.Posts.unshift({ id: action.data });
+      draft.me.Posts.unshift({ id: action.data });
       break;
     case REMOVE_POST_TO_ME:
       draft.me.Posts = draft.me.Posts.filter((v) => v.id !== action.data);

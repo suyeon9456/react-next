@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { logoutAction } from '../reducers/user';
 
 const UserProfile = () => {
-  const { Posts, Followings, Followers } = useSelector((state) => state.user.me);
+  const { Posts, Followings, Followers, nickname } = useSelector((state) => state.user.me);
 
   const dispatch = useDispatch();
   const { logoutLoading } = useSelector((state) => state.user);
@@ -22,8 +22,8 @@ const UserProfile = () => {
       ]}
     >
       <Card.Meta
-        avatar={<Avatar>sy</Avatar>}
-        title="suyeon"
+        avatar={<Avatar>{nickname[0]}</Avatar>}
+        title={nickname}
       />
       <Button onClick={onLogout} loading={logoutLoading}>LOGOUT</Button>
     </Card>
