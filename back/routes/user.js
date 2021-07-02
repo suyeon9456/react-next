@@ -120,4 +120,90 @@ router.patch('/nickname', isLoggedIn, async (req, res, next) => {
   }
 });
 
+router.get('/followings', async (req, res, next) => {
+  try {
+    const user = await User.findOne({
+      where: { id: req.user.id }
+    });
+    if (!user) {
+      return res.status(403).send('존재하지 않는 사용자입니다.');
+    }
+    const follwings = await user.getFollowings();
+    res.status(200).json(follwings);
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
+
+router.get('/followers', async (req, res, next) => {
+  try {
+    const user = await User.findOne({
+      where: { id: req.user.id }
+    });
+    if (!user) {
+      return res.status(403).send('존재하지 않는 사용자입니다.');
+    }
+    const follwers = await user.getFollowers();
+    res.status(200).json(follwers);
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+})
+
+router.patch('/follow/:userId', async (req, res, next) => {
+  try {
+    const user = await User.findOne({
+      where: { id: req.params.userId }
+    });
+
+    if (!user) {
+      return res.status(403).send('존재하지 않는 사용자입니다.');
+    }
+
+    await user.addFollowers(req.user.id);
+    res.status(200).json({ id: parseInt(req.params.userId, 10) });
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
+
+router.delete('/unfollow/:userId', async (req, res, next) => {
+  try {
+    const user = await User.findOne({
+      where: { id: req.params.userId }
+    });
+
+    if (!user) {
+      return res.status(404).send('존재하지 않는 사용자입니다.');
+    }
+
+    await user.removeFollowers(req.user.id);
+    res.status(200).json({ id: parseInt(req.params.userId, 10) });
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
+
+router.delete('/follower/:userId', async (req, res, next) => {
+  try {
+    const user = await User.findOne({
+      where: { id: req.params.userId }
+    });
+
+    if (!user) {
+      return res.status(404).send('존재하지 않는 사용자입니다.');
+    }
+
+    await user.removeFollowings(req.user.id);
+    res.status(200).json({ id: parseInt(req.params.userId, 10) });
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+})
+
 module.exports = router;
