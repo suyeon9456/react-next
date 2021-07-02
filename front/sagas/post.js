@@ -1,7 +1,7 @@
 import { all, fork, put, takeLatest, throttle, call } from 'redux-saga/effects';
 import axios from 'axios';
 // import shortId from 'shortid';
-import { ADD_COMMENT_ERROR, ADD_COMMENT_REQUEST, ADD_COMMENT_SUCCESS, ADD_POST_ERROR, ADD_POST_REQUEST, ADD_POST_SUCCESS, LIKE_POST_ERROR, LIKE_POST_REQUEST, LIKE_POST_SUCCESS, LOAD_POSTS_ERROR, LOAD_POSTS_REQUEST, LOAD_POSTS_SUCCESS, REMOVE_POST_ERROR, REMOVE_POST_REQUEST, REMOVE_POST_SUCCESS, UNLIKE_POST_ERROR, UNLIKE_POST_REQUEST, UNLIKE_POST_SUCCESS } from '../reducers/post';
+import { ADD_COMMENT_ERROR, ADD_COMMENT_REQUEST, ADD_COMMENT_SUCCESS, ADD_POST_ERROR, ADD_POST_REQUEST, ADD_POST_SUCCESS, LIKE_POST_ERROR, LIKE_POST_REQUEST, LIKE_POST_SUCCESS, LOAD_POSTS_ERROR, LOAD_POSTS_REQUEST, LOAD_POSTS_SUCCESS, REMOVE_POST_ERROR, REMOVE_POST_REQUEST, REMOVE_POST_SUCCESS, UNLIKE_POST_ERROR, UNLIKE_POST_REQUEST, UNLIKE_POST_SUCCESS, UPLOAD_IMAGES_ERROR, UPLOAD_IMAGES_REQUEST, UPLOAD_IMAGES_SUCCESS } from '../reducers/post';
 import { ADD_POST_TO_ME, REMOVE_POST_TO_ME } from '../reducers/user';
 
 function likePostAPI(data) {
@@ -135,6 +135,26 @@ function* removePost(action) {
   }
 }
 
+function uploadImagesAPI(data) {
+  return axios.post('/post/images', data);
+}
+
+function* uploadImages(action) {
+  try {
+    const result = yield call(uploadImagesAPI, action.data);
+    yield put({
+      type: UPLOAD_IMAGES_SUCCESS,
+      data: result.data,
+    });
+  } catch (e) {
+    console.error(e);
+    yield put({
+      type: UPLOAD_IMAGES_ERROR,
+      error: e.response.data,
+    });
+  }
+}
+
 function* watchLikePost() {
   yield takeLatest(LIKE_POST_REQUEST, likePost);
 }
@@ -159,6 +179,10 @@ function* watchRemovePost() {
   yield takeLatest(REMOVE_POST_REQUEST, removePost);
 }
 
+function* watchUploadImages() {
+  yield takeLatest(UPLOAD_IMAGES_REQUEST, uploadImages);
+}
+
 export default function* postSaga() {
   yield all([
     yield fork(watchLikePost),
@@ -167,5 +191,6 @@ export default function* postSaga() {
     yield fork(watchAddPost),
     yield fork(watchAddComment),
     yield fork(watchRemovePost),
+    yield fork(watchUploadImages),
   ]);
 }
