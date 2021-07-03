@@ -2,7 +2,7 @@ import React, { useCallback, useRef, useEffect } from 'react';
 import { Button, Form, Input } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { addPost, UPLOAD_IMAGES_REQUEST } from '../reducers/post';
+import { addPost, ADD_POST_REQUEST, REMOVE_IMAGES, UPLOAD_IMAGES_REQUEST } from '../reducers/post';
 import useInput from '../hooks/useInput';
 
 const PostForm = () => {
@@ -22,8 +22,26 @@ const PostForm = () => {
   }, [imageRef.current]);
 
   const onSubmit = useCallback(() => {
-    dispatch(addPost({ content: text }));
+    if (!text || !text.trim()) {
+      return alert('포스트 내용을 입력하세요.');
+    }
+    const formData = new FormData();
+    imagePaths.forEach((p) => {
+      formData.append('image', p);
+    });
+    formData.append('content', text);
+    return dispatch({
+      type: ADD_POST_REQUEST,
+      data: formData,
+    });
   }, [text]);
+
+  const removeImage = useCallback((i) => () => {
+    dispatch({
+      type: REMOVE_IMAGES,
+      data: i,
+    });
+  }, []);
 
   const onChangeImages = useCallback((e) => {
     console.log(e.target.files);
@@ -46,12 +64,12 @@ const PostForm = () => {
         <Button type="primary" style={{ float: 'right' }} htmlType="submit">POST UPLOAD</Button>
       </div>
       <div>
-        {imagePaths.map((v) => (
+        {imagePaths.map((v, i) => (
           (
             <div key={v} style={{ display: 'inline-block' }}>
-              <img src={v} style={{ width: '200px' }} alt={v} />
+              <img src={`http://localhost:3065/${v}`} style={{ width: '200px' }} alt={v} />
               <div>
-                <Button>DELETE</Button>
+                <Button onClick={removeImage(i)}>DELETE</Button>
               </div>
             </div>
           )

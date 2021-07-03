@@ -5,6 +5,7 @@ const fs = require('fs');
 const { Post, Comment, Image, User } = require('../models');
 
 const { isLoggedIn } = require('./middlewares');
+const { create } = require('domain');
 
 const router = express.Router();
 try {
@@ -14,12 +15,33 @@ try {
   fs.mkdirSync('uploads');
 }
 
-router.post('/', isLoggedIn, async (req, res, next) => {
+const upload = multer({
+  storage: multer.diskStorage({
+    destination(req, file, done) {
+      done(null, 'uploads');
+    },
+    filename(req, file, done) {
+      const ext = path.extname(file.originalname); // 확장자 추출
+      const basename = path.basename(file.originalname, ext) // 확장자를 제거한 file 이름만 추출
+      done(null, basename + new Date().getTime() + ext); // file명 + 업로드 날짜 + 시간 + 확장자
+    }
+  }),
+  limits: { fileSize: 20 * 1024 * 1024 } // 20mb
+})
+
+router.post('/', isLoggedIn, upload.none(), async (req, res, next) => {
   try {
     const post = await Post.create({
       content: req.body.content,
       UserId: req.user.id
     });
+    if(Array.isArray(req.body.image)) { // 이미지가 여러개 일 경우에는 배열로 들어온다.
+      const images = await Promise.all(req.body.image.map((path) => Image.create({ src: path })));
+      await post.addImages(images);
+    } else { // 이미지가 하나일 경우 그냥 일반 문자열이다.
+      const image = await Image.create({ src: req.body.image });
+      await post.addImages(image);
+    }
     const fullPost = await Post.findOne({
       where: { id: post.id },
       include: [{
@@ -118,19 +140,6 @@ router.delete('/:postId', isLoggedIn, async (req, res, next) => {
   }
 });
 
-const upload = multer({
-  storage: multer.diskStorage({
-    destination(req, file, done) {
-      done(null, 'uploads');
-    },
-    filename(req, file, done) {
-      const ext = path.extname(file.originalname); // 확장자 추출
-      const basename = path.basename(file.originalname, ext) // 확장자를 제거한 file 이름만 추출
-      done(null, basename + new Date().getTime() + ext); // file명 + 업로드 날짜 + 시간 + 확장자
-    }
-  }),
-  limits: { fileSize: 20 * 1024 * 1024 } // 20mb
-})
 router.post('/images', isLoggedIn, upload.array('image'), (req, res, next) => {
   console.log(req.files) //  이미 업로드 된 상태
   res.status(200).json(req.files.map((v) => v.filename));

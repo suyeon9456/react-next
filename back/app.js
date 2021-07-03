@@ -5,6 +5,7 @@ const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const dotenv = require('dotenv');
 const morgan = require('morgan');
+const path = require('path');
 
 const postsRouter = require('./routes/posts');
 const postRouter = require('./routes/post');
@@ -36,6 +37,7 @@ app.use(cors({
   credentials: true // 기본값 false true 여야 cookie도 같이 전달됨
 })); // header에 Access-Control-Allow-Origin를 추가해줌
 
+app.use('/', express.static(path.join(__dirname, '/uploads'))); // __dirname 은 현재 폴더를 의미 즉 지금은 back폴더를 가르킴
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

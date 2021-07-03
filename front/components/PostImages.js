@@ -65,18 +65,18 @@ const PostImages = ({ images }) => {
         >
           {images.map((v) => (
             <div style={{ textAlign: 'center' }} key={v.src}>
-              <img style={{ margin: '0 auto', maxHeight: '750px' }} src={v.src} alt={v.src} onClick={onZoom} />
+              <img style={{ margin: '0 auto', maxHeight: '750px' }} src={`http://localhost:3065/${v.src}`} alt={v.src} onClick={onZoom} />
             </div>
           ))}
         </Slick>
       </div>
       {showImagesZoom && <ImageZoom images={images} onClose={onClose} />}
     </>
-  )
+  );
 };
 
 PostImages.propTypes = {
-  images: PropTypes.arrayOf(PropTypes.object)
+  images: PropTypes.arrayOf(PropTypes.any),
 };
 
 export default PostImages;

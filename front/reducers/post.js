@@ -76,6 +76,8 @@ export const UPLOAD_IMAGES_REQUEST = 'UPLOAD_IMAGES_REQUEST';
 export const UPLOAD_IMAGES_SUCCESS = 'UPLOAD_IMAGES_SUCCESS';
 export const UPLOAD_IMAGES_ERROR = 'UPLOAD_IMAGES_ERROR';
 
+export const REMOVE_IMAGES = 'REMOVE_IMAGES';
+
 export const addPost = (data) => ({
   type: ADD_POST_REQUEST,
   data,
@@ -169,6 +171,7 @@ const reducer = (state = initialState, action) => (produce(state, (draft) => {
       draft.addPostLoading = false;
       draft.addPostDone = true;
       draft.mainPosts.unshift(action.data);
+      draft.imagePaths = [];
       break;
     case ADD_POST_ERROR:
       draft.addPostLoading = false;
@@ -217,6 +220,9 @@ const reducer = (state = initialState, action) => (produce(state, (draft) => {
     case UPLOAD_IMAGES_ERROR:
       draft.uploadImagesLoading = false;
       draft.uploadImagesError = action.error;
+      break;
+    case REMOVE_IMAGES:
+      draft.imagePaths = draft.imagePaths.filter((_v, i) => i !== action.data);
       break;
     default:
       break;
