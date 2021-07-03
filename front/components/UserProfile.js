@@ -5,6 +5,7 @@ import { logoutAction } from '../reducers/user';
 
 const UserProfile = () => {
   const { Posts, Followings, Followers, nickname } = useSelector((state) => state.user.me);
+  console.log(Posts);
 
   const dispatch = useDispatch();
   const { logoutLoading } = useSelector((state) => state.user);

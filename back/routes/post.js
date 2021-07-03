@@ -2,7 +2,7 @@ const express = require('express');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
-const { Post, Comment, Image, User } = require('../models');
+const { Post, Comment, Image, User, Hashtag } = require('../models');
 
 const { isLoggedIn } = require('./middlewares');
 const { create } = require('domain');
@@ -11,7 +11,7 @@ const router = express.Router();
 try {
   fs.accessSync('uploads');
 } catch (error) {
-  console.log('uploads 폴더가 없어 생성합니다.');
+  console.error('uploads 폴더가 없어 생성합니다.');
   fs.mkdirSync('uploads');
 }
 
@@ -35,12 +35,23 @@ router.post('/', isLoggedIn, upload.none(), async (req, res, next) => {
       content: req.body.content,
       UserId: req.user.id
     });
-    if(Array.isArray(req.body.image)) { // 이미지가 여러개 일 경우에는 배열로 들어온다.
-      const images = await Promise.all(req.body.image.map((path) => Image.create({ src: path })));
-      await post.addImages(images);
-    } else { // 이미지가 하나일 경우 그냥 일반 문자열이다.
-      const image = await Image.create({ src: req.body.image });
-      await post.addImages(image);
+    const hashtag = req.body.content.match(/(#[^\s#]+)/g);
+    console.log('hashtag: ', hashtag);
+    if (hashtag) {
+      const result = await Promise.all(hashtag.map((v) => Hashtag.findOrCreate({
+        where: { name: v.slice(1).toLowerCase() }
+      })));
+      // result = [[react, true], [node, true]]
+      await post.addHashtags(result.map((v) => v[0]));
+    }
+    if (req.body.image) {
+      if (Array.isArray(req.body.image)) { // 이미지가 여러개 일 경우에는 배열로 들어온다.
+        const images = await Promise.all(req.body.image.map((path) => Image.create({ src: path })));
+        await post.addImages(images);
+      } else { // 이미지가 하나일 경우 그냥 일반 문자열이다.
+        const image = await Image.create({ src: req.body.image });
+        await post.addImages(image);
+      }
     }
     const fullPost = await Post.findOne({
       where: { id: post.id },

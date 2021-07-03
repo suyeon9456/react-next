@@ -8,12 +8,10 @@ const { route } = require('./post');
 
 router.get('/', async (req, res, next) => {
   try {
-    console.log('?', req.user.id);
     if(req.user) {
       const user = await User.findOne({
         where: { id: req.user.id }
       });
-      console.log('user', user);
       const userWithoutPassword = await User.findOne({
         where: { id: user.id },
         attributes: {
@@ -100,7 +98,6 @@ router.post('/login', isNotLoggedIn, (req, res, next) => {
 });
 
 router.post('/logout', isLoggedIn, (req, res, next) => {
-  console.log(req.user);
   req.logout();
   req.session.destroy(); //세션에 저장된 쿠키와 아이디 삭제
   res.send('ok');
