@@ -156,4 +156,75 @@ router.post('/images', isLoggedIn, upload.array('image'), (req, res, next) => {
   res.status(200).json(req.files.map((v) => v.filename));
 });
 
+router.post('/retweet/:postId', isLoggedIn, async (req, res, next) => {
+  try {
+    const post = await Post.findOne({
+      where: { id: req.params.postId },
+      include: [{
+        model: Post,
+        as: 'Retweet'
+      }]
+    });
+
+    console.log('post: ', post);
+    if (!post) {
+      res.status(403).send('존재하지 않는 게시물입니다.');
+    }
+
+    if (req.user.id === post.UserId || post.Retweet && post.Retweet.UserId === req.user.id) {
+      res.status(403).send('자신의 게시물은 리트윗할 수 없습니다.');
+    }
+
+    const retweetTargetId = post.RetweetId || post.id;
+    console.log('retweetTargetId: ', retweetTargetId);
+
+    const exPost = await Post.findOne({
+      where: { RetweetId: retweetTargetId, UserId: req.user.id }
+    });
+
+    if (exPost) {
+      res.status(403).send('이미 리트윗한 게시물입니다.');
+    }
+
+    const retweet = await Post.create({
+      content: 'retweet',
+      UserId: req.user.id,
+      RetweetId: retweetTargetId
+    });
+
+    const retweetWithPrevPost = await Post.findOne({
+      where: { id: retweet.id },
+      include: [{
+        model: Post,
+        as: 'Retweet',
+        include: [{
+          model: User,
+          attributes: ['id', 'nickname']
+        }, {
+          model: Image,
+        }]
+      }, {
+        model: User,
+        attributes: ['id', 'nickname']
+      }, {
+        model: Image
+      }, {
+        model: User,
+        as: 'Liker',
+        attributes: ['id']
+      }, {
+        model: Comment,
+        include: [{
+          model: User,
+          attributes: ['id', 'nickname']
+        }]
+      }]
+    });
+
+    res.status(200).json(retweetWithPrevPost);
+  } catch (error) {
+    console.error(error);
+  }
+});
+
 module.exports = router;

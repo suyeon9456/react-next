@@ -8,7 +8,7 @@ import { LOAD_MY_INFO_REQUEST } from '../reducers/user';
 
 const Home = () => {
   const dispatch = useDispatch();
-  const { loginDone, loadMyInfoDone } = useSelector((state) => state.user);
+  const { me } = useSelector((state) => state.user);
   const { mainPosts, hasMorePosts, loadPostsLoading } = useSelector((state) => state.post);
   useEffect(() => {
     dispatch({
@@ -44,7 +44,7 @@ const Home = () => {
   }, []);
   return (
     <AppLayout>
-      {(loginDone || loadMyInfoDone) && <PostForm />}
+      {me && <PostForm />}
       {mainPosts.map((post) => <PostCard key={post.id} post={post} />)}
     </AppLayout>
   );

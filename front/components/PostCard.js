@@ -7,7 +7,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import PostImages from './PostImages';
 import CommentForm from './CommentForm';
 import PostContent from './PostContent';
-import { LIKE_POST_REQUEST, removePost, UNLIKE_POST_REQUEST } from '../reducers/post';
+import { LIKE_POST_REQUEST, removePost, RETWEET_REQUEST, UNLIKE_POST_REQUEST } from '../reducers/post';
 import FollowButton from './FollowButton';
 
 const PostCard = ({ post }) => {
@@ -38,6 +38,13 @@ const PostCard = ({ post }) => {
     dispatch(removePost(post.id));
   }, []);
 
+  const onRetweet = useCallback(() => {
+    dispatch({
+      type: RETWEET_REQUEST,
+      data: post.id,
+    });
+  }, []);
+
   const liked = post.Liker.find((v) => v.id === id);
 
   return (
@@ -45,7 +52,7 @@ const PostCard = ({ post }) => {
       <Card
         cover={post.Images[0] && <PostImages images={post.Images} />}
         actions={[
-          <RetweetOutlined key="retweet" />,
+          <RetweetOutlined key="retweet" onClick={onRetweet} />,
           liked
             ? <HeartTwoTone twoToneColor="#eb2f96" key="heart" onClick={onUnLiked} />
             : <HeartOutlined key="heart" onClick={onLiked} />,
@@ -70,11 +77,28 @@ const PostCard = ({ post }) => {
         ]}
         extra={me && <FollowButton post={post} />}
       >
-        <Card.Meta
-          avatar={post.User.nickname[0]}
-          title={post.User.nickname}
-          description={<PostContent postData={post.content} />}
-        />
+        {
+          post.RetweetId && post.Retweet
+            ? (
+              <Card
+                title={post.RetweetId ? `${post.User.nickname} 이 리트윗한 게시글` : null}
+                cover={post.Retweet.Images[0] && <PostImages images={post.Retweet.Images} />}
+              >
+                <Card.Meta
+                  avatar={post.Retweet.User.nickname[0]}
+                  title={post.Retweet.User.nickname}
+                  description={<PostContent postData={post.Retweet.content} />}
+                />
+              </Card>
+            )
+            : (
+              <Card.Meta
+                avatar={post.User.nickname[0]}
+                title={post.User.nickname}
+                description={<PostContent postData={post.content} />}
+              />
+            )
+        }
       </Card>
       {commentsOpen && (
         <>
@@ -110,6 +134,8 @@ PostCard.propTypes = {
     Comments: PropTypes.arrayOf(PropTypes.any),
     Images: PropTypes.arrayOf(PropTypes.any),
     Liker: PropTypes.arrayOf(PropTypes.any),
+    RetweetId: PropTypes.number,
+    Retweet: PropTypes.objectOf(PropTypes.any),
   }).isRequired,
 };
 

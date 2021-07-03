@@ -1,7 +1,7 @@
 import { all, fork, put, takeLatest, throttle, call } from 'redux-saga/effects';
 import axios from 'axios';
 // import shortId from 'shortid';
-import { ADD_COMMENT_ERROR, ADD_COMMENT_REQUEST, ADD_COMMENT_SUCCESS, ADD_POST_ERROR, ADD_POST_REQUEST, ADD_POST_SUCCESS, LIKE_POST_ERROR, LIKE_POST_REQUEST, LIKE_POST_SUCCESS, LOAD_POSTS_ERROR, LOAD_POSTS_REQUEST, LOAD_POSTS_SUCCESS, REMOVE_POST_ERROR, REMOVE_POST_REQUEST, REMOVE_POST_SUCCESS, UNLIKE_POST_ERROR, UNLIKE_POST_REQUEST, UNLIKE_POST_SUCCESS, UPLOAD_IMAGES_ERROR, UPLOAD_IMAGES_REQUEST, UPLOAD_IMAGES_SUCCESS } from '../reducers/post';
+import { ADD_COMMENT_ERROR, ADD_COMMENT_REQUEST, ADD_COMMENT_SUCCESS, ADD_POST_ERROR, ADD_POST_REQUEST, ADD_POST_SUCCESS, LIKE_POST_ERROR, LIKE_POST_REQUEST, LIKE_POST_SUCCESS, LOAD_POSTS_ERROR, LOAD_POSTS_REQUEST, LOAD_POSTS_SUCCESS, REMOVE_POST_ERROR, REMOVE_POST_REQUEST, REMOVE_POST_SUCCESS, RETWEET_ERROR, RETWEET_REQUEST, RETWEET_SUCCESS, UNLIKE_POST_ERROR, UNLIKE_POST_REQUEST, UNLIKE_POST_SUCCESS, UPLOAD_IMAGES_ERROR, UPLOAD_IMAGES_REQUEST, UPLOAD_IMAGES_SUCCESS } from '../reducers/post';
 import { ADD_POST_TO_ME, REMOVE_POST_TO_ME } from '../reducers/user';
 
 function likePostAPI(data) {
@@ -154,6 +154,26 @@ function* uploadImages(action) {
   }
 }
 
+function retweetAPI(data) {
+  return axios.post(`/post/retweet/${data}`);
+}
+
+function* retweet(action) {
+  try {
+    const result = yield call(retweetAPI, action.data);
+    yield put({
+      type: RETWEET_SUCCESS,
+      data: result.data,
+    });
+  } catch (e) {
+    console.error(e);
+    yield put({
+      type: RETWEET_ERROR,
+      error: e.response.data,
+    });
+  }
+}
+
 function* watchLikePost() {
   yield takeLatest(LIKE_POST_REQUEST, likePost);
 }
@@ -182,6 +202,10 @@ function* watchUploadImages() {
   yield takeLatest(UPLOAD_IMAGES_REQUEST, uploadImages);
 }
 
+function* watchRetweet() {
+  yield takeLatest(RETWEET_REQUEST, retweet);
+}
+
 export default function* postSaga() {
   yield all([
     yield fork(watchLikePost),
@@ -191,5 +215,6 @@ export default function* postSaga() {
     yield fork(watchAddComment),
     yield fork(watchRemovePost),
     yield fork(watchUploadImages),
+    yield fork(watchRetweet),
   ]);
 }

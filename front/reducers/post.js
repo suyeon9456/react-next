@@ -24,6 +24,9 @@ const initialState = {
   uploadImagesLoading: false,
   uploadImagesDone: false,
   uploadImagesError: null,
+  retweetLoading: false,
+  retweetDone: false,
+  retweetError: null,
   mainPosts: [],
   imagePaths: [],
   postAdded: false,
@@ -77,6 +80,10 @@ export const UPLOAD_IMAGES_SUCCESS = 'UPLOAD_IMAGES_SUCCESS';
 export const UPLOAD_IMAGES_ERROR = 'UPLOAD_IMAGES_ERROR';
 
 export const REMOVE_IMAGES = 'REMOVE_IMAGES';
+
+export const RETWEET_REQUEST = 'RETWEET_REQUEST';
+export const RETWEET_SUCCESS = 'RETWEET_SUCCESS';
+export const RETWEET_ERROR = 'RETWEET_ERROR';
 
 export const addPost = (data) => ({
   type: ADD_POST_REQUEST,
@@ -223,6 +230,20 @@ const reducer = (state = initialState, action) => (produce(state, (draft) => {
       break;
     case REMOVE_IMAGES:
       draft.imagePaths = draft.imagePaths.filter((_v, i) => i !== action.data);
+      break;
+    case RETWEET_REQUEST:
+      draft.retweetLoading = true;
+      draft.retweetDone = false;
+      draft.retweetError = null;
+      break;
+    case RETWEET_SUCCESS:
+      draft.retweetLoading = false;
+      draft.retweetDone = true;
+      draft.mainPosts.unshift(action.data);
+      break;
+    case RETWEET_ERROR:
+      draft.retweetLoading = false;
+      draft.retweetError = action.error;
       break;
     default:
       break;
