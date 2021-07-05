@@ -1,11 +1,18 @@
 const express = require('express');
 const router = express.Router();
+const { Op } = require('sequelize');
 
 const { Post, User, Image, Comment } = require('../models');
 
 router.get('/', async (req, res, next) => {
   try {
+    const where = {}
+    console.log('??', !!parseInt(req.query.lastId, 10));
+    if(parseInt(req.query.lastId, 10)) {
+      where.id = { [Op.lt]: parseInt(req.query.lastId, 10) }
+    }
     const posts = await Post.findAll({
+      where,
       limit: 10,
       // offset 은 잘 사용하지 않음
       // 보통 lastId 를 사용함
