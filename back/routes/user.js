@@ -39,7 +39,47 @@ router.get('/', async (req, res, next) => {
     console.error(error);
     next(error);
   }
-})
+});
+
+router.get('/:userId', async (req, res, next) => {
+  try {
+    const user = await User.findOne({
+      where: { id: req.params.userId }
+    });
+    console.log('user: ', user);
+    console.log('user: ', user.id);
+    const userWithoutPassword = await User.findOne({
+      where: { id: user.id },
+      attributes: {
+        exclude: ['password']
+      },  
+      include: [{
+        model: Post,
+        attributes: ['id'],
+      }, {
+        model: User,
+        as: 'Followings',
+        attributes: ['id'],
+      }, {
+        model: User,
+        as: 'Followers',
+        attributes: ['id'],
+      }]
+    });
+    if (userWithoutPassword) {
+      const data = userWithoutPassword.toJSON();
+      data.Posts = data.Posts.length;
+      data.Followings = data.Followings.length;
+      data.Followers = data.Followers.length;
+      return res.status(200).json(data);
+    } else {
+      return res.status(404).send('존재하지 않는 사용자입니다.');
+    }
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
 
 router.post('/', isNotLoggedIn, async (req, res, next) => {
   try {

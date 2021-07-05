@@ -25,7 +25,7 @@ function* loadMyInfo(action) {
 }
 
 function loadUserAPI(data) {
-  const result = axios.get(`/user/${data.id}`);
+  const result = axios.get(`/user/${data}`);
   return result;
 }
 
