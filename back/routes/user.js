@@ -7,6 +7,7 @@ const { isNotLoggedIn, isLoggedIn } = require('./middlewares');
 const { route } = require('./post');
 
 router.get('/', async (req, res, next) => {
+  console.log('쿠키를 확인해보장: ', req.headers);
   try {
     if(req.user) {
       const user = await User.findOne({

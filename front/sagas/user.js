@@ -1,6 +1,6 @@
-import { all, delay, fork, put, takeLatest, call } from 'redux-saga/effects';
+import { all, fork, put, takeLatest, call } from 'redux-saga/effects';
 import axios from 'axios';
-import { CHANGE_NICKNAME_ERROR, CHANGE_NICKNAME_REQUEST, CHANGE_NICKNAME_SUCCESS, FOLLOW_ERROR, FOLLOW_REQUEST, FOLLOW_SUCCESS, LOAD_FOLLOWERS_ERROR, LOAD_FOLLOWERS_REQUEST, LOAD_FOLLOWERS_SUCCESS, LOAD_FOLLOWINGS_ERROR, LOAD_FOLLOWINGS_REQUEST, LOAD_FOLLOWINGS_SUCCESS, LOAD_MY_INFO_ERROR, LOAD_MY_INFO_REQUEST, LOAD_MY_INFO_SUCCESS, LOG_IN_ERROR, LOG_IN_REQUEST, LOG_IN_SUCCESS, LOG_OUT_ERROR, LOG_OUT_REQUEST, LOG_OUT_SUCCESS, REMOVE_FOLLOWER_ERROR, REMOVE_FOLLOWER_REQUEST, REMOVE_FOLLOWER_SUCCESS, SIGN_UP_ERROR, SIGN_UP_REQUEST, SIGN_UP_SUCCESS, UNFOLLOW_ERROR, UNFOLLOW_REQUEST, UNFOLLOW_SUCCESS } from '../reducers/user';
+import { CHANGE_NICKNAME_ERROR, CHANGE_NICKNAME_REQUEST, CHANGE_NICKNAME_SUCCESS, FOLLOW_ERROR, FOLLOW_REQUEST, FOLLOW_SUCCESS, LOAD_FOLLOWERS_ERROR, LOAD_FOLLOWERS_REQUEST, LOAD_FOLLOWERS_SUCCESS, LOAD_FOLLOWINGS_ERROR, LOAD_FOLLOWINGS_REQUEST, LOAD_FOLLOWINGS_SUCCESS, LOAD_MY_INFO_ERROR, LOAD_MY_INFO_REQUEST, LOAD_MY_INFO_SUCCESS, LOAD_USER_ERROR, LOAD_USER_REQUEST, LOAD_USER_SUCCESS, LOG_IN_ERROR, LOG_IN_REQUEST, LOG_IN_SUCCESS, LOG_OUT_ERROR, LOG_OUT_REQUEST, LOG_OUT_SUCCESS, REMOVE_FOLLOWER_ERROR, REMOVE_FOLLOWER_REQUEST, REMOVE_FOLLOWER_SUCCESS, SIGN_UP_ERROR, SIGN_UP_REQUEST, SIGN_UP_SUCCESS, UNFOLLOW_ERROR, UNFOLLOW_REQUEST, UNFOLLOW_SUCCESS } from '../reducers/user';
 
 function loadMyInfoAPI(data) {
   const result = axios.get('/user', data);
@@ -19,6 +19,28 @@ function* loadMyInfo(action) {
   } catch (e) {
     yield put({
       type: LOAD_MY_INFO_ERROR,
+      error: e.response.data,
+    });
+  }
+}
+
+function loadUserAPI(data) {
+  const result = axios.get(`/user/${data.id}`);
+  return result;
+}
+
+function* loadUser(action) {
+  try {
+    const result = yield call(loadUserAPI, action.data);
+    // yield delay(2000);
+    console.log('result', result);
+    yield put({
+      type: LOAD_USER_SUCCESS,
+      data: result.data,
+    });
+  } catch (e) {
+    yield put({
+      type: LOAD_USER_ERROR,
       error: e.response.data,
     });
   }
@@ -210,6 +232,10 @@ function* watchLoadMyInfo() {
   yield takeLatest(LOAD_MY_INFO_REQUEST, loadMyInfo);
 }
 
+function* watchLoadUser() {
+  yield takeLatest(LOAD_USER_REQUEST, loadUser);
+}
+
 function* watchLogin() {
   yield takeLatest(LOG_IN_REQUEST, login);
 }
@@ -249,6 +275,7 @@ function* watchChangeNickname() {
 export default function* userSaga() {
   yield all([
     yield fork(watchLoadMyInfo),
+    yield fork(watchLoadUser),
     yield fork(watchLogin),
     yield fork(watchLogout),
     yield fork(watchSignUp),
