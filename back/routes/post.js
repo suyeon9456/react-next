@@ -27,6 +27,67 @@ const upload = multer({
     }
   }),
   limits: { fileSize: 20 * 1024 * 1024 } // 20mb
+});
+
+router.get('/:postId', async(req, res, next) => {
+  console.log('postId: ', req.params.postId);
+  try {
+    const post = await Post.findOne({
+      where: { id: req.params.postId }
+    });
+    console.log('post: ', post);
+
+    if (!post) {
+      return res.status(404).send('존재하지 않는 게시물입니다.');
+    }
+
+    const fullPost = await Post.findOne({
+      where: { id: post.id },
+      include: [{
+        model: User,
+        attributes: ['id', 'nickname']
+      }, {
+        model: User,
+        as: 'Liker',
+        attributes: ['id', 'nickname']
+      }, {
+        model: Comment,
+        include: [{
+          model: User,
+          attributes: ['id', 'nickname']
+        }]
+      }, {
+        model: Image
+      }, {
+        model: User,
+        as: 'Liker',
+        attributes: ['id']
+      }, {
+        model: Post,
+        as: 'Retweet',
+        include: [{
+          model: User,
+          attributes: ['id', 'nickname']
+        }, {
+          model: Image
+        }, {
+          model: Comment,
+          include: [{
+            model: User,
+            attributes: ['id', 'nickname']
+          }]
+        }, {
+          model: User,
+          as: 'Liker',
+          attributes: ['id']
+        }]
+      }]
+    });
+    res.status(200).json(fullPost);
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
 })
 
 router.post('/', isLoggedIn, upload.none(), async (req, res, next) => {

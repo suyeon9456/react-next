@@ -1,7 +1,7 @@
 import { all, fork, put, takeLatest, throttle, call } from 'redux-saga/effects';
 import axios from 'axios';
 // import shortId from 'shortid';
-import { ADD_COMMENT_ERROR, ADD_COMMENT_REQUEST, ADD_COMMENT_SUCCESS, ADD_POST_ERROR, ADD_POST_REQUEST, ADD_POST_SUCCESS, LIKE_POST_ERROR, LIKE_POST_REQUEST, LIKE_POST_SUCCESS, LOAD_POSTS_ERROR, LOAD_POSTS_REQUEST, LOAD_POSTS_SUCCESS, REMOVE_POST_ERROR, REMOVE_POST_REQUEST, REMOVE_POST_SUCCESS, RETWEET_ERROR, RETWEET_REQUEST, RETWEET_SUCCESS, UNLIKE_POST_ERROR, UNLIKE_POST_REQUEST, UNLIKE_POST_SUCCESS, UPLOAD_IMAGES_ERROR, UPLOAD_IMAGES_REQUEST, UPLOAD_IMAGES_SUCCESS } from '../reducers/post';
+import { ADD_COMMENT_ERROR, ADD_COMMENT_REQUEST, ADD_COMMENT_SUCCESS, ADD_POST_ERROR, ADD_POST_REQUEST, ADD_POST_SUCCESS, LIKE_POST_ERROR, LIKE_POST_REQUEST, LIKE_POST_SUCCESS, LOAD_POSTS_ERROR, LOAD_POSTS_REQUEST, LOAD_POSTS_SUCCESS, LOAD_POST_ERROR, LOAD_POST_REQUEST, LOAD_POST_SUCCESS, REMOVE_POST_ERROR, REMOVE_POST_REQUEST, REMOVE_POST_SUCCESS, RETWEET_ERROR, RETWEET_REQUEST, RETWEET_SUCCESS, UNLIKE_POST_ERROR, UNLIKE_POST_REQUEST, UNLIKE_POST_SUCCESS, UPLOAD_IMAGES_ERROR, UPLOAD_IMAGES_REQUEST, UPLOAD_IMAGES_SUCCESS } from '../reducers/post';
 import { ADD_POST_TO_ME, REMOVE_POST_TO_ME } from '../reducers/user';
 
 function likePostAPI(data) {
@@ -59,6 +59,26 @@ function* loadPosts(action) {
   } catch (e) {
     yield put({
       type: LOAD_POSTS_ERROR,
+      error: e.response.data,
+    });
+  }
+}
+
+function loadPostAPI(data) {
+  return axios.get(`/post/${data}`);
+}
+
+function* loadPost(action) {
+  try {
+    const result = yield call(loadPostAPI, action.data);
+    console.log('result.data', result.data);
+    yield put({
+      type: LOAD_POST_SUCCESS,
+      data: result.data,
+    });
+  } catch (e) {
+    yield put({
+      type: LOAD_POST_ERROR,
       error: e.response.data,
     });
   }
@@ -186,6 +206,10 @@ function* watchLoadPosts() {
   yield throttle(5000, LOAD_POSTS_REQUEST, loadPosts);
 }
 
+function* watchLoadPost() {
+  yield throttle(5000, LOAD_POST_REQUEST, loadPost);
+}
+
 function* watchAddPost() {
   yield takeLatest(ADD_POST_REQUEST, addPost);
 }
@@ -211,6 +235,7 @@ export default function* postSaga() {
     yield fork(watchLikePost),
     yield fork(watchUnlikePost),
     yield fork(watchLoadPosts),
+    yield fork(watchLoadPost),
     yield fork(watchAddPost),
     yield fork(watchAddComment),
     yield fork(watchRemovePost),
