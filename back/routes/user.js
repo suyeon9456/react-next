@@ -2,7 +2,8 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const passport = require('passport');
-const { User, Post } = require('../models');
+const { Op } = require('sequelize');
+const { User, Post, Image, Comment } = require('../models');
 const { isNotLoggedIn, isLoggedIn } = require('./middlewares');
 const { route } = require('./post');
 
@@ -46,8 +47,6 @@ router.get('/:userId', async (req, res, next) => {
     const user = await User.findOne({
       where: { id: req.params.userId }
     });
-    console.log('user: ', user);
-    console.log('user: ', user.id);
     const userWithoutPassword = await User.findOne({
       where: { id: user.id },
       attributes: {
@@ -75,6 +74,59 @@ router.get('/:userId', async (req, res, next) => {
     } else {
       return res.status(404).send('존재하지 않는 사용자입니다.');
     }
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
+
+router.get('/posts/:userId', async (req, res, next) => {
+  try {
+    const where = { UserId: req.params.userId };
+    if (parseInt(req.query.lastId, 10)) {
+      where.id = { [Op.lt]: parseInt(req.query.lastId) };
+    }
+    const posts = await Post.findAll({
+      where,
+      limit: 10,
+      order: [['createdAt', 'DESC']],
+      include:[{
+        model: User,
+        attribute: ['id', 'nickname'],
+      }, {
+        model: Image,
+      }, {
+        model: Comment,
+        include: [{
+          model: User,
+          attributes: ['id', 'nickname'],
+        }]
+      }, {
+        model: User,
+        as: 'Liker',
+        attribute: ['id'],
+      }, {
+        model: Post,
+        as: 'Retweet',
+        include: [{
+          model: User,
+          attributes: ['id', 'nickname']
+        }, {
+          model: Image
+        }, {
+          model: Comment,
+          include: [{
+            model: User,
+            attributes: ['id', 'nickname']
+          }]
+        }, {
+          model: User,
+          as: 'Liker',
+          attributes: ['id']
+        }]
+      }]
+    });
+    res.status(200).json(posts);
   } catch (error) {
     console.error(error);
     next(error);
