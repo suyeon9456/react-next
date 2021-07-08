@@ -42,6 +42,38 @@ router.get('/', async (req, res, next) => {
   }
 });
 
+router.get('/followings', async (req, res, next) => {
+  try {
+    const user = await User.findOne({
+      where: { id: req.user.id }
+    });
+    if (!user) {
+      return res.status(403).send('존재하지 않는 사용자입니다.');
+    }
+    const follwings = await user.getFollowings({ limit: parseInt(req.query.limit, 10) });
+    res.status(200).json(follwings);
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
+
+router.get('/followers', async (req, res, next) => {
+  try {
+    const user = await User.findOne({
+      where: { id: req.user.id }
+    });
+    if (!user) {
+      return res.status(403).send('존재하지 않는 사용자입니다.');
+    }
+    const follwers = await user.getFollowers({ limit: parseInt(req.query.limit, 10) });
+    res.status(200).json(follwers);
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
+
 router.get('/:userId', async (req, res, next) => {
   try {
     const user = await User.findOne({
@@ -209,38 +241,6 @@ router.patch('/nickname', isLoggedIn, async (req, res, next) => {
     next(error);
   }
 });
-
-router.get('/followings', async (req, res, next) => {
-  try {
-    const user = await User.findOne({
-      where: { id: req.user.id }
-    });
-    if (!user) {
-      return res.status(403).send('존재하지 않는 사용자입니다.');
-    }
-    const follwings = await user.getFollowings();
-    res.status(200).json(follwings);
-  } catch (error) {
-    console.error(error);
-    next(error);
-  }
-});
-
-router.get('/followers', async (req, res, next) => {
-  try {
-    const user = await User.findOne({
-      where: { id: req.user.id }
-    });
-    if (!user) {
-      return res.status(403).send('존재하지 않는 사용자입니다.');
-    }
-    const follwers = await user.getFollowers();
-    res.status(200).json(follwers);
-  } catch (error) {
-    console.error(error);
-    next(error);
-  }
-})
 
 router.patch('/follow/:userId', async (req, res, next) => {
   try {

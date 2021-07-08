@@ -11,7 +11,7 @@ const ButtonWrapper = styled.div`
   margin: 10px 0;
 `;
 
-const FollowList = ({ header, data }) => {
+const FollowList = ({ header, data, onClickMore, loading }) => {
   console.log('data: ', data);
   const dispatch = useDispatch();
   const onCancle = (id) => () => {
@@ -34,7 +34,7 @@ const FollowList = ({ header, data }) => {
       size="small"
       bordered
       loadMore={
-        <ButtonWrapper><Button>더보기</Button></ButtonWrapper>
+        <ButtonWrapper onClick={onClickMore} loading={loading}><Button>더보기</Button></ButtonWrapper>
       }
       dataSource={data}
       renderItem={(item) => (
@@ -52,6 +52,8 @@ const FollowList = ({ header, data }) => {
 FollowList.propTypes = {
   header: PropTypes.string.isRequired,
   data: PropTypes.array.isRequired,
+  onClickMore: PropTypes.func.isRequired,
+  loading: PropTypes.bool.isRequired,
 };
 
 export default FollowList;
