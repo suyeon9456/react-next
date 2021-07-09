@@ -4,6 +4,7 @@ import { Button, Card, Popover, List, Avatar, Comment, Input, Form } from 'antd'
 import { RetweetOutlined, HeartOutlined, EllipsisOutlined, MessageOutlined, HeartTwoTone } from '@ant-design/icons'
 import { useSelector, useDispatch } from 'react-redux';
 import Link from 'next/link';
+import moment from 'moment';
 
 import PostImages from './PostImages';
 import CommentForm from './CommentForm';
@@ -11,6 +12,8 @@ import PostContent from './PostContent';
 import { LIKE_POST_REQUEST, removePost, RETWEET_REQUEST, UNLIKE_POST_REQUEST } from '../reducers/post';
 import FollowButton from './FollowButton';
 import useInput from '../hooks/useInput';
+
+moment.locale('ko');
 
 const PostCard = ({ post }) => {
   const id = useSelector((state) => state.user.me?.id);
@@ -98,6 +101,9 @@ const PostCard = ({ post }) => {
                 title={post.RetweetId ? `${post.User.nickname} 이 리트윗한 게시글` : null}
                 cover={post.Retweet.Images[0] && <PostImages images={post.Retweet.Images} />}
               >
+                <div style={{ float: 'right' }}>
+                  {moment(post.createdAt).format('YYYY.MM.DD')}
+                </div>
                 <Card.Meta
                   avatar={(
                     <Link href={`/user/${post.Retweet.User.id}`}>
@@ -112,50 +118,55 @@ const PostCard = ({ post }) => {
               </Card>
             )
             : (
-              <Card.Meta
-                avatar={(
-                  <Link href={`/user/${post.User.id}`}>
-                    <a>
-                      <Avatar>{post.User.nickname[0]}</Avatar>
-                    </a>
-                  </Link>
-                )}
-                title={post.User.nickname}
-                description={isUpdate
-                  ? (
-                    <Form>
-                      <Input.TextArea value={text} onChange={onChangeText} />
-                      <div>
-                        <input type="file" name="image" multiple hidden ref={imageRef} />
-                        <Button>IMAGE UPLOAD</Button>
-                        <Button type="primary" style={{ float: 'right' }} htmlType="submit">POST</Button>
-                      </div>
-                      <div>
-                        {post.Images.map((v) => (
-                          (
-                            <div key={v} style={{ display: 'inline-block' }}>
-                              <img src={`http://localhost:3065/${v.src}`} style={{ width: '200px' }} alt={v} />
-                              <div>
-                                <Button onClick={removePostImage(v)}>DELETE</Button>
+              <>
+                <div style={{ float: 'right' }}>
+                  {moment(post.createdAt).format('YYYY.MM.DD')}
+                </div>
+                <Card.Meta
+                  avatar={(
+                    <Link href={`/user/${post.User.id}`}>
+                      <a>
+                        <Avatar>{post.User.nickname[0]}</Avatar>
+                      </a>
+                    </Link>
+                  )}
+                  title={post.User.nickname}
+                  description={isUpdate
+                    ? (
+                      <Form>
+                        <Input.TextArea value={text} onChange={onChangeText} />
+                        <div>
+                          <input type="file" name="image" multiple hidden ref={imageRef} />
+                          <Button>IMAGE UPLOAD</Button>
+                          <Button type="primary" style={{ float: 'right' }} htmlType="submit">POST</Button>
+                        </div>
+                        <div>
+                          {post.Images.map((v) => (
+                            (
+                              <div key={v} style={{ display: 'inline-block' }}>
+                                <img src={`http://localhost:3065/${v.src}`} style={{ width: '200px' }} alt={v} />
+                                <div>
+                                  <Button onClick={removePostImage(v)}>DELETE</Button>
+                                </div>
                               </div>
-                            </div>
-                          )
-                        ))}
-                        {imagePaths.map((v, i) => (
-                          (
-                            <div key={v} style={{ display: 'inline-block' }}>
-                              <img src={`http://localhost:3065/${v}`} style={{ width: '200px' }} alt={v} />
-                              <div>
-                                <Button>DELETE</Button>
+                            )
+                          ))}
+                          {imagePaths.map((v, i) => (
+                            (
+                              <div key={v} style={{ display: 'inline-block' }}>
+                                <img src={`http://localhost:3065/${v}`} style={{ width: '200px' }} alt={v} />
+                                <div>
+                                  <Button>DELETE</Button>
+                                </div>
                               </div>
-                            </div>
-                          )
-                        ))}
-                      </div>
-                    </Form>
-                  )
-                  : <PostContent postData={post.content} />}
-              />
+                            )
+                          ))}
+                        </div>
+                      </Form>
+                    )
+                    : <PostContent postData={post.content} />}
+                />
+              </>
             )
         }
       </Card>
