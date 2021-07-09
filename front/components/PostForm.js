@@ -2,7 +2,7 @@ import React, { useCallback, useRef, useEffect } from 'react';
 import { Button, Form, Input } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { addPost, ADD_POST_REQUEST, REMOVE_IMAGES, UPLOAD_IMAGES_REQUEST } from '../reducers/post';
+import { ADD_POST_REQUEST, REMOVE_IMAGES, UPLOAD_IMAGES_REQUEST } from '../reducers/post';
 import useInput from '../hooks/useInput';
 
 const PostForm = () => {

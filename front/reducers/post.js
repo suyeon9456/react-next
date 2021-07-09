@@ -24,6 +24,9 @@ const initialState = {
   removePostLoading: false,
   removePostDone: false,
   removePostError: null,
+  updatePostLoading: false,
+  updatePostDone: false,
+  updatePostError: null,
   uploadImagesLoading: false,
   uploadImagesDone: false,
   uploadImagesError: null,
@@ -90,6 +93,10 @@ export const ADD_COMMENT_ERROR = 'ADD_COMMENT_ERROR';
 export const REMOVE_POST_REQUEST = 'REMOVE_POST_REQUEST';
 export const REMOVE_POST_SUCCESS = 'REMOVE_POST_SUCCESS';
 export const REMOVE_POST_ERROR = 'REMOVE_POST_ERROR';
+
+export const UPDATE_POST_REQUEST = 'UPDATE_POST_REQUEST';
+export const UPDATE_POST_SUCCESS = 'UPDATE_POST_SUCCESS';
+export const UPDATE_POST_ERROR = 'UPDATE_POST_ERROR';
 
 export const UPLOAD_IMAGES_REQUEST = 'UPLOAD_IMAGES_REQUEST';
 export const UPLOAD_IMAGES_SUCCESS = 'UPLOAD_IMAGES_SUCCESS';
@@ -249,6 +256,21 @@ const reducer = (state = initialState, action) => (produce(state, (draft) => {
     case REMOVE_POST_ERROR:
       draft.removePostLoading = false;
       draft.removePostError = action.error;
+      break;
+    case UPDATE_POST_REQUEST:
+      draft.updatePostLoading = true;
+      draft.updatePostDone = false;
+      draft.updatePostError = null;
+      break;
+    case UPDATE_POST_SUCCESS:
+      draft.updatePostLoading = false;
+      draft.updatePostDone = true;
+      // draft.mainPosts = draft.mainPosts.map((v) => );
+      draft.imagePaths = [];
+      break;
+    case UPDATE_POST_ERROR:
+      draft.updatePostLoading = false;
+      draft.updatePostError = action.error;
       break;
     case UPLOAD_IMAGES_REQUEST:
       draft.uploadImagesLoading = true;

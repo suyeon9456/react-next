@@ -1,6 +1,6 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import { Button, Card, Popover, List, Avatar, Comment } from 'antd';
+import { Button, Card, Popover, List, Avatar, Comment, Input, Form } from 'antd';
 import { RetweetOutlined, HeartOutlined, EllipsisOutlined, MessageOutlined, HeartTwoTone } from '@ant-design/icons'
 import { useSelector, useDispatch } from 'react-redux';
 import Link from 'next/link';
@@ -10,14 +10,19 @@ import CommentForm from './CommentForm';
 import PostContent from './PostContent';
 import { LIKE_POST_REQUEST, removePost, RETWEET_REQUEST, UNLIKE_POST_REQUEST } from '../reducers/post';
 import FollowButton from './FollowButton';
+import useInput from '../hooks/useInput';
 
 const PostCard = ({ post }) => {
   const id = useSelector((state) => state.user.me?.id);
   const me = useSelector((state) => state.user.me);
+  const { removePostLoading, imagePaths } = useSelector((state) => state.post);
   const dispatch = useDispatch();
-  const { removePostLoading } = useSelector((state) => state.post);
   // const [liked, setLiked] = useState(false);
+  const imageRef = useRef();
   const [commentsOpen, setCommentsOpen] = useState(false);
+  const [isUpdate, setIsUpdate] = useState(false);
+  const [delImages, setDelImages] = useState([]);
+  const [text, onChangeText] = useInput(post.content);
 
   const onLiked = useCallback(() => {
     dispatch({
@@ -46,12 +51,20 @@ const PostCard = ({ post }) => {
     });
   }, []);
 
+  const udatePost = useCallback(() => {
+    setIsUpdate(true);
+  }, []);
+
+  const removePostImage = useCallback((v) => () => {
+    console.log('v:: ', v);
+  }, []);
+
   const liked = post.Liker.find((v) => v.id === id);
 
   return (
     <div>
       <Card
-        cover={post.Images[0] && <PostImages images={post.Images} />}
+        cover={isUpdate ? '' : post.Images[0] && <PostImages images={post.Images} />}
         actions={[
           <RetweetOutlined key="retweet" onClick={onRetweet} />,
           liked
@@ -65,7 +78,7 @@ const PostCard = ({ post }) => {
                 {id && id === post.User.id
                   ? (
                     <>
-                      <Button>수정</Button>
+                      <Button onClick={udatePost}>수정</Button>
                       <Button type="danger" loading={removePostLoading} onClick={delPost}>삭제</Button>
                     </>
                   )
@@ -108,7 +121,40 @@ const PostCard = ({ post }) => {
                   </Link>
                 )}
                 title={post.User.nickname}
-                description={<PostContent postData={post.content} />}
+                description={isUpdate
+                  ? (
+                    <Form>
+                      <Input.TextArea value={text} onChange={onChangeText} />
+                      <div>
+                        <input type="file" name="image" multiple hidden ref={imageRef} />
+                        <Button>IMAGE UPLOAD</Button>
+                        <Button type="primary" style={{ float: 'right' }} htmlType="submit">POST</Button>
+                      </div>
+                      <div>
+                        {post.Images.map((v) => (
+                          (
+                            <div key={v} style={{ display: 'inline-block' }}>
+                              <img src={`http://localhost:3065/${v.src}`} style={{ width: '200px' }} alt={v} />
+                              <div>
+                                <Button onClick={removePostImage(v)}>DELETE</Button>
+                              </div>
+                            </div>
+                          )
+                        ))}
+                        {imagePaths.map((v, i) => (
+                          (
+                            <div key={v} style={{ display: 'inline-block' }}>
+                              <img src={`http://localhost:3065/${v}`} style={{ width: '200px' }} alt={v} />
+                              <div>
+                                <Button>DELETE</Button>
+                              </div>
+                            </div>
+                          )
+                        ))}
+                      </div>
+                    </Form>
+                  )
+                  : <PostContent postData={post.content} />}
               />
             )
         }
