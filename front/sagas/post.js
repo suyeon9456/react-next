@@ -1,7 +1,7 @@
 import { all, fork, put, takeLatest, throttle, call } from 'redux-saga/effects';
 import axios from 'axios';
 // import shortId from 'shortid';
-import { ADD_COMMENT_ERROR, ADD_COMMENT_REQUEST, ADD_COMMENT_SUCCESS, ADD_POST_ERROR, ADD_POST_REQUEST, ADD_POST_SUCCESS, LIKE_POST_ERROR, LIKE_POST_REQUEST, LIKE_POST_SUCCESS, LOAD_HASHTAG_POSTS_ERROR, LOAD_HASHTAG_POSTS_REQUEST, LOAD_HASHTAG_POSTS_SUCCESS, LOAD_POSTS_ERROR, LOAD_POSTS_REQUEST, LOAD_POSTS_SUCCESS, LOAD_POST_ERROR, LOAD_POST_REQUEST, LOAD_POST_SUCCESS, LOAD_USER_POSTS_ERROR, LOAD_USER_POSTS_REQUEST, LOAD_USER_POSTS_SUCCESS, REMOVE_POST_ERROR, REMOVE_POST_REQUEST, REMOVE_POST_SUCCESS, RETWEET_ERROR, RETWEET_REQUEST, RETWEET_SUCCESS, UNLIKE_POST_ERROR, UNLIKE_POST_REQUEST, UNLIKE_POST_SUCCESS, UPLOAD_IMAGES_ERROR, UPLOAD_IMAGES_REQUEST, UPLOAD_IMAGES_SUCCESS } from '../reducers/post';
+import { ADD_COMMENT_ERROR, ADD_COMMENT_REQUEST, ADD_COMMENT_SUCCESS, ADD_POST_ERROR, ADD_POST_REQUEST, ADD_POST_SUCCESS, LIKE_POST_ERROR, LIKE_POST_REQUEST, LIKE_POST_SUCCESS, LOAD_HASHTAG_POSTS_ERROR, LOAD_HASHTAG_POSTS_REQUEST, LOAD_HASHTAG_POSTS_SUCCESS, LOAD_POSTS_ERROR, LOAD_POSTS_REQUEST, LOAD_POSTS_SUCCESS, LOAD_POST_ERROR, LOAD_POST_REQUEST, LOAD_POST_SUCCESS, LOAD_USER_POSTS_ERROR, LOAD_USER_POSTS_REQUEST, LOAD_USER_POSTS_SUCCESS, REMOVE_POST_ERROR, REMOVE_POST_REQUEST, REMOVE_POST_SUCCESS, RETWEET_ERROR, RETWEET_REQUEST, RETWEET_SUCCESS, UNLIKE_POST_ERROR, UNLIKE_POST_REQUEST, UNLIKE_POST_SUCCESS, UPDATE_POST_ERROR, UPDATE_POST_REQUEST, UPDATE_POST_SUCCESS, UPLOAD_IMAGES_ERROR, UPLOAD_IMAGES_REQUEST, UPLOAD_IMAGES_SUCCESS } from '../reducers/post';
 import { ADD_POST_TO_ME, REMOVE_POST_TO_ME } from '../reducers/user';
 
 function likePostAPI(data) {
@@ -148,6 +148,32 @@ function* addPost(action) {
   }
 }
 
+function updatePostAPI(data) {
+  return axios.put(`/post/${data.postId}`, data);
+}
+
+function* updatePost(action) {
+  try {
+    const result = yield call(updatePostAPI, action.data);
+    // const id = shortId.generate();
+    // yield delay(2000);
+    yield put({
+      type: UPDATE_POST_SUCCESS,
+      data: result.data,
+    });
+    // yield put({
+    //   type: UPDATE_POST_TO_ME,
+    //   data: result.data.id,
+    // });
+  } catch (e) {
+    console.error(e);
+    yield put({
+      type: UPDATE_POST_ERROR,
+      error: e.response.data,
+    });
+  }
+}
+
 function addCommentAPI(data) {
   return axios.post(`/post/${data.postId}/comment`, data);
 }
@@ -261,6 +287,10 @@ function* watchAddPost() {
   yield takeLatest(ADD_POST_REQUEST, addPost);
 }
 
+function* watchUpdatePost() {
+  yield takeLatest(UPDATE_POST_REQUEST, updatePost);
+}
+
 function* watchAddComment() {
   yield takeLatest(ADD_COMMENT_REQUEST, addComment);
 }
@@ -286,6 +316,7 @@ export default function* postSaga() {
     yield fork(watchLoadHashtagPosts),
     yield fork(watchLoadPost),
     yield fork(watchAddPost),
+    yield fork(watchUpdatePost),
     yield fork(watchAddComment),
     yield fork(watchRemovePost),
     yield fork(watchUploadImages),

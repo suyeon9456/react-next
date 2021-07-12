@@ -38,6 +38,8 @@ const initialState = {
   imagePaths: [],
   postAdded: false,
   hasMorePosts: true,
+  isUpdated: null,
+  removeImages: [],
 };
 
 export const dummyLoadPosts = (number) => (Array(number).fill().map(() => ({
@@ -98,11 +100,14 @@ export const UPDATE_POST_REQUEST = 'UPDATE_POST_REQUEST';
 export const UPDATE_POST_SUCCESS = 'UPDATE_POST_SUCCESS';
 export const UPDATE_POST_ERROR = 'UPDATE_POST_ERROR';
 
+export const CHANGE_UPDATE_STATUS = 'CHANGE_UPDATE_STATUS';
+
 export const UPLOAD_IMAGES_REQUEST = 'UPLOAD_IMAGES_REQUEST';
 export const UPLOAD_IMAGES_SUCCESS = 'UPLOAD_IMAGES_SUCCESS';
 export const UPLOAD_IMAGES_ERROR = 'UPLOAD_IMAGES_ERROR';
 
 export const REMOVE_IMAGES = 'REMOVE_IMAGES';
+export const REMOVE_UPD_IMAGES = 'REMOVE_UPD_IMAGES';
 
 export const RETWEET_REQUEST = 'RETWEET_REQUEST';
 export const RETWEET_SUCCESS = 'RETWEET_SUCCESS';
@@ -265,12 +270,16 @@ const reducer = (state = initialState, action) => (produce(state, (draft) => {
     case UPDATE_POST_SUCCESS:
       draft.updatePostLoading = false;
       draft.updatePostDone = true;
-      // draft.mainPosts = draft.mainPosts.map((v) => );
+      draft.mainPosts = draft.mainPosts.map((v) => (action.data.id === v.id ? action.data : v));
+      draft.isUpdated = null;
       draft.imagePaths = [];
       break;
     case UPDATE_POST_ERROR:
       draft.updatePostLoading = false;
       draft.updatePostError = action.error;
+      break;
+    case CHANGE_UPDATE_STATUS:
+      draft.isUpdated = action.data;
       break;
     case UPLOAD_IMAGES_REQUEST:
       draft.uploadImagesLoading = true;
@@ -288,6 +297,9 @@ const reducer = (state = initialState, action) => (produce(state, (draft) => {
       break;
     case REMOVE_IMAGES:
       draft.imagePaths = draft.imagePaths.filter((_v, i) => i !== action.data);
+      break;
+    case REMOVE_UPD_IMAGES:
+      draft.removeImages = draft.removeImages.push(action.data.id);
       break;
     case RETWEET_REQUEST:
       draft.retweetLoading = true;

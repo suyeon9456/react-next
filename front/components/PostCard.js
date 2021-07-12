@@ -9,23 +9,20 @@ import moment from 'moment';
 import PostImages from './PostImages';
 import CommentForm from './CommentForm';
 import PostContent from './PostContent';
-import { LIKE_POST_REQUEST, removePost, RETWEET_REQUEST, UNLIKE_POST_REQUEST } from '../reducers/post';
+import { CHANGE_UPDATE_STATUS, LIKE_POST_REQUEST, removePost, RETWEET_REQUEST, UNLIKE_POST_REQUEST } from '../reducers/post';
 import FollowButton from './FollowButton';
 import useInput from '../hooks/useInput';
+import PostForm from './PostForm';
 
 moment.locale('ko');
 
 const PostCard = ({ post }) => {
   const id = useSelector((state) => state.user.me?.id);
   const me = useSelector((state) => state.user.me);
-  const { removePostLoading, imagePaths } = useSelector((state) => state.post);
+  const { removePostLoading, isUpdated } = useSelector((state) => state.post);
   const dispatch = useDispatch();
   // const [liked, setLiked] = useState(false);
-  const imageRef = useRef();
   const [commentsOpen, setCommentsOpen] = useState(false);
-  const [isUpdate, setIsUpdate] = useState(false);
-  const [delImages, setDelImages] = useState([]);
-  const [text, onChangeText] = useInput(post.content);
 
   const onLiked = useCallback(() => {
     dispatch({
@@ -55,11 +52,10 @@ const PostCard = ({ post }) => {
   }, []);
 
   const udatePost = useCallback(() => {
-    setIsUpdate(true);
-  }, []);
-
-  const removePostImage = useCallback((v) => () => {
-    console.log('v:: ', v);
+    dispatch({
+      type: CHANGE_UPDATE_STATUS,
+      data: post.id,
+    });
   }, []);
 
   const liked = post.Liker.find((v) => v.id === id);
@@ -67,7 +63,7 @@ const PostCard = ({ post }) => {
   return (
     <div>
       <Card
-        cover={isUpdate ? '' : post.Images[0] && <PostImages images={post.Images} />}
+        cover={isUpdated === post.id ? '' : post.Images[0] && <PostImages images={post.Images} />}
         actions={[
           <RetweetOutlined key="retweet" onClick={onRetweet} />,
           liked
@@ -131,38 +127,13 @@ const PostCard = ({ post }) => {
                     </Link>
                   )}
                   title={post.User.nickname}
-                  description={isUpdate
+                  description={isUpdated === post.id
                     ? (
-                      <Form>
-                        <Input.TextArea value={text} onChange={onChangeText} />
-                        <div>
-                          <input type="file" name="image" multiple hidden ref={imageRef} />
-                          <Button>IMAGE UPLOAD</Button>
-                          <Button type="primary" style={{ float: 'right' }} htmlType="submit">POST</Button>
-                        </div>
-                        <div>
-                          {post.Images.map((v) => (
-                            (
-                              <div key={v} style={{ display: 'inline-block' }}>
-                                <img src={`http://localhost:3065/${v.src}`} style={{ width: '200px' }} alt={v} />
-                                <div>
-                                  <Button onClick={removePostImage(v)}>DELETE</Button>
-                                </div>
-                              </div>
-                            )
-                          ))}
-                          {imagePaths.map((v, i) => (
-                            (
-                              <div key={v} style={{ display: 'inline-block' }}>
-                                <img src={`http://localhost:3065/${v}`} style={{ width: '200px' }} alt={v} />
-                                <div>
-                                  <Button>DELETE</Button>
-                                </div>
-                              </div>
-                            )
-                          ))}
-                        </div>
-                      </Form>
+                      <PostForm
+                        updateText={post.content}
+                        updateId={post.id}
+                        updateImg={post.Images}
+                      />
                     )
                     : <PostContent postData={post.content} />}
                 />

@@ -135,6 +135,65 @@ router.post('/', isLoggedIn, upload.none(), async (req, res, next) => {
   }
 });
 
+router.put('/:postId', isLoggedIn, upload.none(), async (req, res, next) => {
+  try {
+    const exPost = await Post.findOne({
+      where: { id: req.params.postId }
+    });
+
+    if (!exPost) {
+      return res.status(403).send('해당 포스트는 존재하지 않는 포스트입니다.');
+    }
+
+    if (req.user && exPost.UserId !== req.user.id) {
+      return res.status(403).send('해당 포스트를 수정할 권한이 없습니다.');
+    }
+
+    await Post.update({
+      content: req.body.content
+    }, {
+      where: { id: exPost.id }
+    });
+
+    const hashtag = req.body.content.match(/(#[^\s#]+)/g);
+    // console.log('hashtag: ', hashtag);
+    if (hashtag) {
+      const result = await Promise.all(hashtag.map((v) => Hashtag.findOrCreate({
+        where: { name: v.slice(1).toLowerCase() }
+      })));
+      // result = [[react, true], [node, true]]
+      await post.addHashtags(result.map((v) => v[0]));
+    }
+    // if (req.body.image) {
+    //   if (Array.isArray(req.body.image)) { // 이미지가 여러개 일 경우에는 배열로 들어온다.
+    //     const images = await Promise.all(req.body.image.map((path) => Image.create({ src: path })));
+    //     await post.addImages(images);
+    //   } else { // 이미지가 하나일 경우 그냥 일반 문자열이다.
+    //     const image = await Image.create({ src: req.body.image });
+    //     await post.addImages(image);
+    //   }
+    // }
+    const fullPost = await Post.findOne({
+      where: { id: req.params.postId },
+      include: [{
+        model: Comment,
+      }, {
+        model: Image,
+      }, {
+        model: User, // 작성자
+      }, {
+        model: User,
+        as: 'Liker',
+        attributes: ['id'],
+      }]
+    })
+    res.status(201).json(fullPost);
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+});
+
 router.post('/:postId/comment', isLoggedIn, async (req, res, next) => {
   try {
     const post = await Post.findOne({

@@ -1,14 +1,22 @@
 import React, { useCallback, useRef, useEffect } from 'react';
 import { Button, Form, Input } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
+import PropTypes from 'prop-types';
 
-import { ADD_POST_REQUEST, REMOVE_IMAGES, UPLOAD_IMAGES_REQUEST } from '../reducers/post';
+import { ADD_POST_REQUEST, REMOVE_IMAGES, UPDATE_POST_REQUEST,
+  UPLOAD_IMAGES_REQUEST, REMOVE_UPD_IMAGES } from '../reducers/post';
 import useInput from '../hooks/useInput';
 
-const PostForm = () => {
-  const { imagePaths, addPostDone } = useSelector((state) => state.post);
+const PostForm = ({ updateText = '', updateId = 0, updateImg = [] }) => {
+  const { imagePaths, addPostDone, isUpdated, removeImages } = useSelector((state) => state.post);
   const dispatch = useDispatch();
   const [text, onChangeText, setText] = useInput('');
+
+  useEffect(() => {
+    if (isUpdated === updateId && updateText) {
+      setText(updateText);
+    }
+  }, [isUpdated, updateText]);
 
   useEffect(() => {
     if (addPostDone) {
@@ -25,6 +33,15 @@ const PostForm = () => {
     if (!text || !text.trim()) {
       return alert('포스트 내용을 입력하세요.');
     }
+    if (isUpdated === updateId) {
+      return dispatch({
+        type: UPDATE_POST_REQUEST,
+        data: {
+          postId: updateId,
+          content: text,
+        },
+      });
+    }
     const formData = new FormData();
     imagePaths.forEach((p) => {
       formData.append('image', p);
@@ -40,6 +57,14 @@ const PostForm = () => {
     dispatch({
       type: REMOVE_IMAGES,
       data: i,
+    });
+  }, []);
+
+  const removeUpdImages = useCallback((image) => () => {
+    console.log(image);
+    dispatch({
+      type: REMOVE_UPD_IMAGES,
+      data: { id: image.id, postId: image.PostId },
     });
   }, []);
 
@@ -64,6 +89,16 @@ const PostForm = () => {
         <Button type="primary" style={{ float: 'right' }} htmlType="submit">POST UPLOAD</Button>
       </div>
       <div>
+        {isUpdated === updateId && updateImg.map((v) => (
+          (
+            <div key={v} style={{ display: 'inline-block' }}>
+              <img src={`http://localhost:3065/${v.src}`} style={{ width: '200px' }} alt={v} />
+              <div>
+                <Button onClick={removeUpdImages(v)}>DELETE</Button>
+              </div>
+            </div>
+          )
+        ))}
         {imagePaths.map((v, i) => (
           (
             <div key={v} style={{ display: 'inline-block' }}>
@@ -77,6 +112,12 @@ const PostForm = () => {
       </div>
     </Form>
   );
+};
+
+PostForm.propTypes = {
+  updateText: PropTypes.string.isRequired,
+  updateId: PropTypes.number.isRequired,
+  updateImg: PropTypes.array.isRequired,
 };
 
 export default PostForm;
