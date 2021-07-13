@@ -108,6 +108,7 @@ export const UPLOAD_IMAGES_ERROR = 'UPLOAD_IMAGES_ERROR';
 
 export const REMOVE_IMAGES = 'REMOVE_IMAGES';
 export const REMOVE_UPD_IMAGES = 'REMOVE_UPD_IMAGES';
+export const CANCEL_UPD_IMAGES = 'CANCEL_UPD_IMAGES';
 
 export const RETWEET_REQUEST = 'RETWEET_REQUEST';
 export const RETWEET_SUCCESS = 'RETWEET_SUCCESS';
@@ -289,7 +290,7 @@ const reducer = (state = initialState, action) => (produce(state, (draft) => {
     case UPLOAD_IMAGES_SUCCESS:
       draft.uploadImagesLoading = false;
       draft.uploadImagesDone = true;
-      draft.imagePaths = action.data;
+      draft.imagePaths.push({ postId: action.data.postId, filename: action.data.image });
       break;
     case UPLOAD_IMAGES_ERROR:
       draft.uploadImagesLoading = false;
@@ -299,7 +300,10 @@ const reducer = (state = initialState, action) => (produce(state, (draft) => {
       draft.imagePaths = draft.imagePaths.filter((_v, i) => i !== action.data);
       break;
     case REMOVE_UPD_IMAGES:
-      draft.removeImages = draft.removeImages.push(action.data.id);
+      draft.removeImages.push(action.data);
+      break;
+    case CANCEL_UPD_IMAGES:
+      draft.removeImages = draft.removeImages.filter((v) => v !== action.data.id);
       break;
     case RETWEET_REQUEST:
       draft.retweetLoading = true;

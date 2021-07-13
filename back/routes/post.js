@@ -164,15 +164,30 @@ router.put('/:postId', isLoggedIn, upload.none(), async (req, res, next) => {
       // result = [[react, true], [node, true]]
       await post.addHashtags(result.map((v) => v[0]));
     }
-    // if (req.body.image) {
-    //   if (Array.isArray(req.body.image)) { // 이미지가 여러개 일 경우에는 배열로 들어온다.
-    //     const images = await Promise.all(req.body.image.map((path) => Image.create({ src: path })));
-    //     await post.addImages(images);
-    //   } else { // 이미지가 하나일 경우 그냥 일반 문자열이다.
-    //     const image = await Image.create({ src: req.body.image });
-    //     await post.addImages(image);
-    //   }
-    // }
+    console.log('req.boyd.removeImage::::', req.body.removeImages);
+
+    if (req.body.removeImages) {
+      if (Array.isArray(req.body.removeImages)) {
+        const imagesResult = await Promise.all(req.body.removeImages.map((image) => Image.destroy({
+          where: { id: image }
+        })));
+        exPost.removeImages(imagesResult);
+      } else {
+        const imageResult = await Image.destroy({
+          where: { id: req.body.removeImages }
+        });
+        exPost.removeImages(imageResult);
+      }
+    }
+    if (req.body.image) {
+      if (Array.isArray(req.body.image)) { // 이미지가 여러개 일 경우에는 배열로 들어온다.
+        const images = await Promise.all(req.body.image.map((path) => Image.create({ src: path })));
+        await exPost.addImages(images);
+      } else { // 이미지가 하나일 경우 그냥 일반 문자열이다.
+        const image = await Image.create({ src: req.body.image });
+        await exPost.addImages(image);
+      }
+    }
     const fullPost = await Post.findOne({
       where: { id: req.params.postId },
       include: [{

@@ -12,7 +12,6 @@ const ButtonWrapper = styled.div`
 `;
 
 const FollowList = ({ header, data, onClickMore, loading }) => {
-  console.log('data: ', data);
   const dispatch = useDispatch();
   const onCancle = (id) => () => {
     if (header === 'FOLLOWING LIST') {

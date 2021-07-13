@@ -8,7 +8,6 @@ import AppLayout from '../components/AppLayout';
 
 const About = () => {
   const { Posts, Followings, Followers, nickname } = useSelector((state) => state.user.userInfo);
-  console.log(Posts);
 
   // const dispatch = useDispatch();
   // const { logoutLoading } = useSelector((state) => state.user);

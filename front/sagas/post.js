@@ -110,7 +110,6 @@ function loadPostAPI(data) {
 function* loadPost(action) {
   try {
     const result = yield call(loadPostAPI, action.data);
-    console.log('result.data', result.data);
     yield put({
       type: LOAD_POST_SUCCESS,
       data: result.data,
@@ -149,7 +148,7 @@ function* addPost(action) {
 }
 
 function updatePostAPI(data) {
-  return axios.put(`/post/${data.postId}`, data);
+  return axios.put(`/post/${data.get('postId')}`, data);
 }
 
 function* updatePost(action) {
@@ -228,7 +227,10 @@ function* uploadImages(action) {
     const result = yield call(uploadImagesAPI, action.data);
     yield put({
       type: UPLOAD_IMAGES_SUCCESS,
-      data: result.data,
+      data: {
+        image: result.data,
+        postId: action.data.get('postId'),
+      },
     });
   } catch (e) {
     console.error(e);
