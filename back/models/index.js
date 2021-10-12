@@ -12,6 +12,7 @@ db.Hashtag = require('./hashtag')(sequelize, Sequelize);
 db.Image = require('./image')(sequelize, Sequelize);
 db.Hashtag = require('./Hashtag')(sequelize, Sequelize);
 
+console.log('2', db);
 Object.keys(db).forEach(modelName => {
   if (db[modelName].associate) {
     db[modelName].associate(db);
